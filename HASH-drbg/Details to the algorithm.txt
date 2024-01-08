@@ -1,0 +1,23 @@
+INPUT explanation:
+
+The numbers 7500 and 1000 are used in the code. These numbers are the limits for the number of bits that can be generated or provided by the DRBG algorithm, as specified in the NIST document. which can be found in the following sections:
+
+Section 8.6.7 Reseeding: This section states that “the reseed_interval shall not exceed 2^48, but may be lower. A lower value is recommended (e.g., 2^13)”. The reseed_interval is the number of requests for pseudorandom bits that can be made before a reseed is required. The recommended value of 2^13 is equivalent to 8192, which is close to 7500. Therefore, 7500 is used as a conservative limit for the number of bits that can be generated in a single call, to ensure that the reseed_interval is not exceeded.
+Section 9.1 Entropy Input: This section states that “the minimum entropy for the entropy input shall be equal to the security strength of the DRBG mechanism. The maximum length of the entropy input shall be 1000 bits”. Therefore, 1000 is used as the limit for the number of bits that can be provided as entropy input, to follow the NIST requirement.
+
+
+Hexadecimal values used in UPDATE and _instantiate functions:
+
+Hexadecimal values in the code follow the pseudocode provided in the NIST document. The b"\x00" and b"\x01" are byte literals that represent the hexadecimal values 00 and 01, respectively. They are used as separators and indicators in the Hash_df function and the _update function. For example, in the Hash_df function, the input string is divided into two parts: the leftmost 440 bits and the remaining bits. The b"\x00" is appended to the leftmost part and the b"\x01" is appended to the remaining part, before hashing them separately. This ensures that the two parts are distinct and do not produce the same hash value. Similarly, in the _update function, the b"\x01", b"\x02", and b"\x03" are used to indicate different cases of the function, such as whether the provided_data is present or not, and to separate the V and the provided_data. This ensures that the function produces different outputs for different inputs and cases. More details about the pseudocode and the rationale behind these values are in the NIST document, in Section 10.3.1 and Appendix B.
+
+
+
+The reason behind the difference between the actual code and the document is that I have simplified the code by using the SHA-256 hash function directly as used in the HMAC-drbg, instead of using the Hash_df function defined in the document. The Hash_df function is a derivation function that takes an input string and a requested number of bits and produces an output string of that length by hashing the input with a counter. The 440 number is the requested number of bits for the output of the Hash_df function, which is equal to the output length of the SHA-256 hash function. Therefore, I have skipped the Hash_df function and used the SHA-256 hash function instead, which produces the same result. This makes the code more concise and easier to understand. However, the Hash_df function is defined in Section 10.3.1 of the NIST publication.
+
+
+Definitions:  num_bytes and security_strength:
+
+The number of bytes is the length of the random sequence that you want to generate using the Hash_DRBG algorithm. For example, if you want to generate a random sequence of 16 bytes, you can call the generate method with num_bytes = 16. The number of bytes should not exceed 7500 bits, which is about 937 bytes, according to the NIST document.
+
+
+The security strength is the level of protection that you want to achieve using the Hash_DRBG algorithm. It is measured in bits, and it indicates how hard it is for an attacker to guess or break the random sequence. For example, if you want to achieve a security strength of 128 bits, you can call the generate method with security_strength = 128. The security strength should be between 112 and 256 bits, according to the NIST document.
