@@ -41,6 +41,7 @@ class AES_DRBG(object):
 
         # 0.0 ===== Initialize the important variables in this algorithm ===============================================
         self.reseed_counter = 0
+        self.security_strength = security_strength
 
         self.aes = None
         self.key = None
@@ -56,40 +57,36 @@ class AES_DRBG(object):
         # Seed Length = output length + Key length (Key length = security strength)
         if security_strength == 256:
             self.seed_length = 48                       # key length + output length = 32 + 16 = 48 bytes
-            self.key_length = 32                        #
+            self.key_length = 32                        # key length = 256 // 8 == 32 bytes
 
         elif security_strength == 192:
             self.seed_length = 40                       # key length + output length = 24 + 16 = 40 bytes
-            self.key_length = 24
+            self.key_length = 24                        # key length = 192 // 8 == 24 bytes
 
         elif security_strength == 128:
             self.seed_length = 32                       # key length + output length = 16 + 16 = 32 bytes
-            self.key_length = 16
+            self.key_length = 16                        # key length = 128 // 8 == 16 bytes
 
         else:
-            raise ValueError("Keylen is not possible to support for the AES-DRBG Algorithm.")
+            raise ValueError(f"{security_strength} Keylen is not possible to support this AES-DRBG Algorithm.")
 
     # 0.0 ==============================================================================================================
 
     def instantiate(self, entropy_in, personalization_string=b''):
 
-        # Check if the entropy input is the same length as the seed length
-        if len(entropy_in) != self.seed_length:
-            raise ValueError("Length of entropy input must be equal to seedlen")
+        if len(entropy_in) != self.seed_length:         # The input entropy and the seed length must be the same
+            raise ValueError(f"Length of entropy input must be equal to "
+                             f"seedlen {(self.security_strength // 8) + 16}")
 
-        # Check if the personalization string is provided
-        if len(personalization_string) != 0:
+        if len(personalization_string) != 0:            # if the personalization string is provided enter into the condition
 
-            # Get the length of the personalization string in bytes
             temp = len(personalization_string)
 
-            # If the personalization string is shorter than the seed length, pad it with zeros
-            if temp < self.seed_length:
+            if temp < self.seed_length:                 # If string is shorter than the seed length, pad it with zeros
 
                 personalization_string = bytes_padding(personalization_string, self.seed_length)
 
-            # If the personalization string is longer than the seed length, raise an error
-            else:
+            else:                                       # if temp > self.seed_length, raise an error
 
                 raise ValueError("Length of personalization string must be equal or less than seedlen")
 
