@@ -3,26 +3,23 @@ import copy
 """ This file is able to generate M-sequences using the user defined polynomials, initial states and the desired list of 
 lengths. The number of lengths will be the total number of sequences for the given polynomials. 
 
-This file also generates a Gold Code sequence using the generated M-sequences.
+This file also generates a Gold Code sequence using selected M-sequences by its index number from 0 to length of the list.
 
 The user can select only two polynomial and its relevant seeds for the current code. if more parameters are require then
 the code need to be modified accordingly in the sections 4.0 and 5.0"""
 
 # 0.0 ================================= USER INPUTS ====================================================================
 
-polynomial_1 = [5, 2]                               # Any poly. can be selected here as an input
-polynomial_2 = [7, 5, 2]                            # Any poly. can be selected here as an input
+polynomial_1 = [15, 5, 3, 2]                               # Any poly. can be selected here as an input
+polynomial_2 = [19, 7, 5, 2]                            # Any poly. can be selected here as an input
 
 seq_len = [31, 62, 127]                             # sequence length can be both a [single integer or a list]
 
-initial_state_1 = [1, 1, 1, 0, 1]                   # The init state must be equal to the length of polynomial
-initial_state_2 = [1, 0, 1, 0, 1, 0, 0]             # The init state must be equal to the length of polynomial
+initial_state_1 = [1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1]                  # The init state must be equal to the length of polynomial
+initial_state_2 = [1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0]             # The init state must be equal to the length of polynomial
 
 # select the "index-number" from the seq_len list to generate the Gold sequence ========================================
 selected_index_number_for_gold_seq = 3              # select the number from 1 to end of list from seq_len (eg.: 3 = 127)
-
-# print the results or not =============================================================================================
-print_results = True                                # False for the empty console
 
 # ======================================================================================================================
 
@@ -130,16 +127,19 @@ def print_Seq(parameters_name, seq, len_list):
 M_sequence_1 = generate_m_sequence(polynomial_1, seq_len, initial_state_1)
 M_sequence_2 = generate_m_sequence(polynomial_2, seq_len, initial_state_2)
 
-if True:
-    print_Seq('1st type', M_sequence_1, seq_len)                      # print the generated results for 1st parameters
-    print_Seq('2nd type', M_sequence_2, seq_len)                      # print the generated results for 2nd parameters
+print_Seq("First Polynomial's", M_sequence_1, seq_len)                      # print the generated results for 1st parameters
+print_Seq("Second Polynomial's", M_sequence_2, seq_len)                     # print the generated results for 2nd parameters
 
 # 5.0 ===== Generate the gold-sequence =================================================================================
 
-seq_1 = M_sequence_1[int(selected_index_number_for_gold_seq) - 1]     # adjust the index number because it starts from 0
-seq_2 = M_sequence_2[int(selected_index_number_for_gold_seq) - 1]
+index = int(selected_index_number_for_gold_seq) - 1                         # adjust the index number because it starts from 0
+
+if not (0 <= index < len(M_sequence_1)):
+    raise ValueError("Selected index is out of range to generate an Gold sequence.")
+
+seq_1 = M_sequence_1[index]
+seq_2 = M_sequence_2[index]
 G_seq = Gold_Sequence(seq_1, seq_2)
 
-if True:
-    print("Gold Sequence: ", G_seq, "\nLength of the Gold sequence: ", len(G_seq))
-    print(f"Gold Sequence Balance: 0s = {seq_1.count(0)}, 1s = {seq_2.count(1)}\n")
+print("Gold Sequence: ", G_seq, "\nLength of the Gold sequence: ", len(G_seq))
+print(f"Gold Sequence Balance: 0s = {seq_1.count(0)}, 1s = {seq_2.count(1)}\n")

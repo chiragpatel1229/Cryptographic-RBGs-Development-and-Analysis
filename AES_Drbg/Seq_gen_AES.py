@@ -1,35 +1,42 @@
 import os
+import secrets
 import aes_drbg
 
-# Create an instance of the AES_DRBG class with a key length of 256 bits
-my_generator = aes_drbg.AES_DRBG(256)
 
-# Obtain an entropy source that can provide at least 48 bytes of random bytes
-entropy_in = os.urandom(48)
+# =================================================================================================================
+my_generator = aes_drbg.AES_DRBG(256)  # Create an instance of the AES_DRBG class with a key length of 256 bits
 
-# Provide a personalization string that is unique to your application and 48 bytes long
-per_string = b"\x00" * 43
 
-# Call the instantiate method with the entropy input and the personalization string
-my_generator.instantiate(entropy_in, per_string)
+# =================================================================================================================
+entropy_in = os.urandom(48)                     # Obtain an entropy source that can provide at least 48 bytes of random bytes
 
-# Call the generate method with the number of bytes you want to generate
-random_bytes = my_generator.generate(32)
 
-# Print the random binary sequence in hexadecimal format
-print(random_bytes.hex())
+per_string = b"\x00" * 43                       # Provide a personalization string that is unique to your application and 48 bytes long
 
-# Provide an additional input that is 48 bytes long
-add_in = b"MoreEntropy" + b"\x00" * 38
 
-# Call the generate method again with the number of bytes and the additional input
-random_bytes = my_generator.generate(32, add_in)
+my_generator.instantiate(entropy_in,
+                         per_string)  # Call the instantiate method with the entropy input and the personalization string
 
-# Print the random binary sequence in hexadecimal format
-print(random_bytes.hex())
 
-# Obtain a new entropy source that can provide at least 48 bytes of random bytes
-entropy_in = os.urandom(48)
+random_bytes = my_generator.generate(32)        # Call the generate method with the number of bytes you want to generate
 
-# Call the reseed method with the new entropy input and the additional input
-my_generator.reseed(entropy_in, add_in)
+
+print(random_bytes.hex())                       # Print the random binary sequence in hexadecimal format
+
+
+# =================================================================================================================
+
+add_in = secrets.token_bytes(48)                # Provide an additional input that is 48 bytes long
+
+
+random_bytes = my_generator.generate(32, add_in)    # Call the generate method again with the number of bytes and the additional input
+
+
+print(random_bytes.hex())                       # Print the random binary sequence in hexadecimal format
+
+
+# =================================================================================================================
+entropy_in = os.urandom(48)                     # Obtain a new entropy source that can provide at least 48 bytes of random bytes
+
+
+my_generator.reseed(entropy_in, add_in)         # Call the reseed method with the new entropy input and the additional input
