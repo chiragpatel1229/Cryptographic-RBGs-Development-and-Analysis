@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/SP800-90B_EntropyAssessment" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/SP800-90B_EntropyAssessment/jsoncpp" vcs="Git" />
   </component>
