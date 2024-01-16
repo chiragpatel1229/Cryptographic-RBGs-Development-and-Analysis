@@ -1,4 +1,6 @@
 import pyaes
+import os
+import secrets
 
 
 # References: The AES-DRBG mechanism based on NIST SP800-90A Publication
@@ -8,8 +10,25 @@ import pyaes
 # for all block cipher operations of this DRBG. The block cipher algorithm and key length shall meet or exceed the
 # security requirements of the consuming application.
 
+# This file generates only one sequence per execution the reseed is not required, while generating more than one sequences and the
+# reseed counter reach the max interval leval the drbg need to be reseeded using the reseed function with new entropy and data
+
+# 0.0 =========== User Inputs ==========================================================================================
+
+sel_AES_security_strength = 256                          # Select the strength from this list (128, 192, 256)
+
+output_bytes = 32                                        # OUTPUT bytes: 32 * 8 = 256 bits < 4000 bits or 500 bytes
 
 # 1.0 ===== Convert The Data Types for convenience =====================================================================
+
+
+def b2i(data):                                              # convert bytes to a list of integers
+    binary_string = ''                                      # Convert each byte to a binary string and join them
+    for byte in data:
+        binary_string += bin(byte)[2:].zfill(8)             # convert each byte to binary of 8 characters and append
+    # integer_list = [int(bit) for bit in binary_string]      # Convert the binary string to a list of integers
+    return binary_string
+
 
 def strings_xor(a, b):                                  # XOR two byte strings a and b
     x_str = bytes(x ^ y for x, y in zip(a, b))
@@ -46,7 +65,8 @@ class AES_DRBG(object):
         self.out_length = 16                            # Set the output block length to 16 bytes (128 bits)
 
         #                                               Set the reseed interval max limit to 2^48, that will be same for all key lengths,
-        self.reseed_interval = 2 ** 48                  # Refer the Table: 3 on Page - 49
+        self.reseed_interval = 100000                   # Refer the Table: 3 on Page - 49
+        self.max_request_size = 4000                # Maximum bytes or 2^16 < 2^19 bits  for AES mentioned in table-3 but check on Page-84
 
         # 2.1.3 ===== define the seed and key length based on the security strength ====================================
 
@@ -69,7 +89,10 @@ class AES_DRBG(object):
 
     # 2.2 ===== instantiate the AES object, key and counter ============================================================
 
-    def instantiate(self, entropy_in, personalization_string=b''):
+    def instantiate(self):
+
+        entropy_in = os.urandom(self.seed_length)       # Obtain an entropy source that can provide at least 48 bytes of random bytes
+        personalization_string = b'Indian cuisine is most favourite!' + b'\x25'  # Provide a personalization string that is unique to your application and 48 bytes long
 
         # 2.2.1 ===== Verify the Entropy Input conditions ==============================================================
 
@@ -142,7 +165,9 @@ class AES_DRBG(object):
 
     # 2.4 ===== improve the entropy of the seed material and the Key and the counter ===================================
 
-    def reseed(self, entropy_in, add_in=b''):
+    def reseed(self, add_in=None):
+
+        entropy_in = secrets.token_bytes(self.seed_length)
 
         # 2.4.1 ===== Verify the reseed interval conditions ============================================================
 
@@ -156,15 +181,15 @@ class AES_DRBG(object):
 
         # 2.4.3 ===== Verify the Additional Input conditions otherwise create additional string ======================
 
-        if len(add_in) != 0:                            # if the provided data is available
+        if add_in:                                    # Check if the additional data is provided or not
+            if len(add_in) > self.seed_length:        # if yes, check the length of it if more or less
+                raise ValueError('Additional data is more than required !!!')
+            else:                                     # if okay then fulfill the requirement
+                add_in = bytes_padding(add_in, self.seed_length)
 
-            if len(add_in) != self.seed_length:         # Check if the additional input == seed length
-                raise ValueError(f"Additional input length == seed length {self.seed_length} !!!")
-
-        else:                                           # if add_in length == 0, create one using bytes_padding function
-
-            cjp = b"Chirag Patel" * 2                   # select a random byte string to initiate
-            add_in = bytes_padding(cjp, self.seed_length)
+        else:                                       # Use internal data if data is not provided
+            data = b'A user can add here anything. Based on NIST standards'  # it can be any length, used padding in the next step
+            add_in = bytes_padding(data, self.seed_length)
 
         # 2.4.4 ===== Update the internal state of the variables =======================================================
 
@@ -176,25 +201,29 @@ class AES_DRBG(object):
 
     # 2.5 ==============================================================================================================
 
-    def generate(self, req_bytes, add_in=b''):
+    def generate(self, req_bytes, add_in=None):
 
         # 2.5.1 ===== Verify the Reseed interval conditions ============================================================
 
         if self.reseed_counter > self.reseed_interval:
             raise Warning("the DRBG should be reseeded !!!")
 
+        if (req_bytes * 8) > self.max_request_size:
+            raise RuntimeError(f"It is not possible to generate {req_bytes} bytes which is more than 500 bytes in a single call.")
+
         # 2.5.2 ===== Verify the Additional Input conditions ===========================================================
 
-        if len(add_in) != 0:                            # Check if the additional input is provided
+        if add_in:                                      # Check if the additional data is provided or not
+            if len(add_in) > self.seed_length:          # if yes, check the length of it if more or less
+                raise ValueError('Additional data is more than required !!!')
+            else:                                       # if okay then fulfill the requirement
+                add_in = bytes_padding(add_in, self.seed_length)
 
-            if len(add_in) != self.seed_length:         # the additional input must be equal to the seed length
-                raise ValueError("Additional input length == seed length !!!")
+        else:                                           # Use internal data if data is not provided
+            data = b'A user can add here anything. Based on NIST standards'  # it can be any length, used padding in the next step
+            add_in = bytes_padding(data, self.seed_length)
 
-        else:                                           # if add_in length == 0, create one using bytes_padding function
-
-            cjp = b"Chirag Patel" * 2                   # select a random byte string to initiate
-            add_in = bytes_padding(cjp, self.seed_length)
-            # Call the update method with the additional input as an argument, and update the key and the counter
+        # Call the update method with the additional input as an argument, and update the key and the counter
 
         self.update(add_in)                             # Call the update method to refresh the key and the counter
 
@@ -218,3 +247,12 @@ class AES_DRBG(object):
         self.reseed_counter = self.reseed_counter + 1   # Increment the reseed counter by one
 
         return returned_bytes                           # Return the random binary sequence
+
+
+# 3.0 =========== Call the class and its functions, requires input data is =============================================
+# =============== being generated inside the function so the user does not need to add it manually =====================
+
+drbg = AES_DRBG(sel_AES_security_strength)      # Create an instance of the AES_DRBG class with a key length of 256 bits
+drbg.instantiate()                              # Call the instantiate method with the entropy input and the personalization string
+random_bytes = drbg.generate(output_bytes)      # Call the generate method with the number of bytes you want to generate
+print(b2i(random_bytes))                        # Print the random binary sequence in hexadecimal format

@@ -16,7 +16,7 @@ def generate_sequences():
     entropy = os.urandom(48)
 
     data = b'John Doe' + b'\x25'
-    drbg.init(entropy, data)
+    drbg.instantiate()
 
     for i in range(10):
 
@@ -28,6 +28,6 @@ def generate_sequences():
         entropy = os.urandom(48)
 
         data = b'blue' + b'cat'
-        drbg.reseed(entropy, data)
+        drbg.reseed()
 
     return sequences

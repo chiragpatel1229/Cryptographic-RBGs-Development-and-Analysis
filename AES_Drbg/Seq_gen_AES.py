@@ -4,7 +4,7 @@ import aes_drbg
 
 
 # =================================================================================================================
-my_generator = aes_drbg.AES_DRBG(256)  # Create an instance of the AES_DRBG class with a key length of 256 bits
+my_generator = aes_drbg.AES_DRBG(256)           # Create an instance of the AES_DRBG class with a key length of 256 bits
 
 
 # =================================================================================================================

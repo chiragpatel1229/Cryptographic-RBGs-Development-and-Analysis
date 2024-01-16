@@ -9,15 +9,12 @@ reseed counter limit is reached then the DRBG has to be reseeded again."""
 # References: The HASH-DRBG mechanism based on NIST SP800-90A Publication
 # Please consider all the Input parameters in bytes...
 
+# This file generates only one sequence per execution so the reseed is not required, while generating more than one sequences and the
+# reseed counter reach the max interval leval the drbg need to be reseeded using the reseed function with new entropy and data
 
 # 0.0 =========== User Inputs ==========================================================================================
 
-security_strength = 256                              # The strength should be = (112, 128, 192, 256)
-init_entropy = os.urandom(48)                        # (security strength * 1.5) < init_entropy < (125 bytes)
-personalization_str = os.urandom(32)                 # (security_strength bits) < nonce < (256 bits / 32 bytes)
-
-reseed_entropy = secrets.token_bytes(48)             # (security strength * 1.5) < init_entropy < ( < 125 bytes)
-reseed_input = b"anything can be passed here"        # security_strength == reseed_input < (256 bits / 32 bytes)
+security_strength = 112                              # The strength should be = (112, 128, 192, 256)
 
 output_bytes = 32                                    # input will be in bytes, it should be less than 7500
 
@@ -28,14 +25,14 @@ def b2i(data):                                              # convert bytes to a
     binary_string = ''                                      # Convert each byte to a binary string and join them
     for byte in data:
         binary_string += bin(byte)[2:].zfill(8)             # convert each byte to binary of 8 characters and append
-    integer_list = [int(bit) for bit in binary_string]      # Convert the binary string to a list of integers
-    return integer_list
+    # integer_list = [int(bit) for bit in binary_string]      # Convert the binary string to a list of integers
+    return binary_string
 
 
 # 2.0 =========== Hash DRBG class ======================================================================================
 
 class Hash_DRBG:
-    def __init__(self, entropy: bytes, selected_strength: int = 256, data: bytes = b""):    # data = personalized byte string
+    def __init__(self, selected_strength: int = 256):    # data = personalized byte string
 
         # Internal state variables  ====================================================================================
         self.V = None
@@ -46,10 +43,6 @@ class Hash_DRBG:
         if selected_strength > 256:
             raise RuntimeError("requested_security_strength cannot exceed 256 bits.")
 
-        # Modified from Section 10.1.1, which specified 440 bits here ==================================================
-        if len(data) * 8 > 256:
-            raise RuntimeError("personalization_string cannot exceed 256 bits.")
-
         # consider the security strength based on requested value check Table 1 on Page - 14 ===========================
         if selected_strength <= 112:
             self.security_strength = 112
@@ -59,6 +52,15 @@ class Hash_DRBG:
             self.security_strength = 192
         else:
             self.security_strength = 256
+
+        # Internal state variables  ====================================================================================
+
+        entropy = os.urandom(self.security_strength // 8 + 3)   # (security strength * 1.5) < init_entropy < (125 bytes)
+        data = secrets.token_bytes(30)                      # (security_strength bits) < nonce < (256 bits / 32 bytes)
+
+        # Modified from Section 10.1.1, which specified 440 bits here ==================================================
+        if len(data) * 8 > 256:
+            raise RuntimeError("personalization_string cannot exceed 256 bits.")
 
         # Check the length of the entropy input ========================================================================
         if (len(entropy) * 8) < self.security_strength:     # The length should be at least equal to the security strength
@@ -81,7 +83,7 @@ class Hash_DRBG:
 # 2.1 ==================================================================================================================
 
     @staticmethod                                           # Simple wrapper for SHA-256 hash function
-    def _hash(data: bytes) -> bytes:                        # Updating and manipulating the internal state
+    def hash(data: bytes) -> bytes:                        # Updating and manipulating the internal state
         return hashlib.sha256(data).digest()                # return Hash Digest as a bytes object
 
 # 2.2 ==================================================================================================================
@@ -89,9 +91,9 @@ class Hash_DRBG:
     def update(self, provided_data: bytes = None):         # Update internal state of V and C based on provided data
         if provided_data is None:
             provided_data = b"\x00" * (self.security_strength // 8)
-        temp = self._hash(self.V + b"\x01" + provided_data)
-        self.V = self._hash(self.V + b"\x02" + provided_data + temp)     # updating the internal state of V
-        self.C = self._hash(self.V + b"\x03" + provided_data + temp)     # updating the internal state of C
+        temp = self.hash(self.V + b"\x01" + provided_data)
+        self.V = self.hash(self.V + b"\x02" + provided_data + temp)  # updating the internal state of V
+        self.C = self.hash(self.V + b"\x03" + provided_data + temp)  # updating the internal state of C
 
         '''b"\x01", b"\x02", and b"\x03" are used to indicate different cases, to separate the V and the provided_data.
         This ensures that the function produces different outputs for different inputs and cases. -> 10.3.1 and Appendix B'''
@@ -102,9 +104,9 @@ class Hash_DRBG:
         # B.1.7
         seed_material = seed + personalization_string
         # B.1.8 and 9
-        self.V = self._hash(seed_material + b"\x00")
+        self.V = self.hash(seed_material + b"\x00")
         # B.1.10
-        self.C = self._hash(self.V + b"\x01")
+        self.C = self.hash(self.V + b"\x01")
         # B.1.11
         self.reseed_counter = 1
 
@@ -139,7 +141,7 @@ class Hash_DRBG:
 
         # B.1.3.11
         while len(temp) < num_bytes:
-            self.V = self._hash(self.V)
+            self.V = self.hash(self.V)
             temp += self.V
 
         # B.1.3.13 and 14 and 16
@@ -151,9 +153,9 @@ class Hash_DRBG:
         return temp[:num_bytes]
 
 
-# 3.0 ==================================================================================================================
+# 3.0 =========== Call the class and its functions, required input data is =============================================
+# =============== being generated inside the function so the user does not need to add it manually =====================
 
-drbg = Hash_DRBG(init_entropy, security_strength, personalization_str)
-drbg.reseed(reseed_entropy, reseed_input)
+drbg = Hash_DRBG(security_strength)
 random_seq = drbg.generate(output_bytes)
 print(b2i(random_seq), "\n", "Total number of Bits:", len(b2i(random_seq)))

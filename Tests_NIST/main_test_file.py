@@ -59,25 +59,25 @@ def test_sequences(file_path):
                 -0.2 <= m_co <= 0.2:
             passed_sequences.append(index)
         else:
-            # print('\n\n')
+            print('\n\n')
 
             # print out which test is being Failed for which sequence ==================================================
-            # if not rct:
-            #     print(f"Sequence {index} failed the Repetition Test.")
-            # if not apt:
-            #     print(f"Sequence {index} failed the Adaptive Test.")
+            if not rct:
+                print(f"Sequence {index} failed the Repetition Test.")
+            if not apt:
+                print(f"Sequence {index} failed the Adaptive Test.")
             if not (low <= score_i <= up):
                 print(f"Sequence {index} failed the Independence Test")
             if not (0 <= score_g <= 16.919):
                 print(f"Sequence {index} failed the Goodness of Fit Test.")
-            # if not (0 <= B_Cal <= 0.2):
-            #     print(f"Sequence {index} failed the Burstiness Parameter Test.")
-            # if not (0 <= chisquare <= 3.841):
-            #     print(f"Sequence {index} failed the Chi-square Test.")
+            if not (0 <= B_Cal <= 0.2):
+                print(f"Sequence {index} failed the Burstiness Parameter Test.")
+            if not (0 <= chisquare <= 3.841):
+                print(f"Sequence {index} failed the Chi-square Test.")
             if not (0.712 <= min_entropy <= 1.000):
                 print(f"Sequence {index} failed the Markov = min_entropy Test.")
-            # if not (-0.2 <= m_co <= 0.2):
-            #     print(f"Sequence {index} failed the Memory Coefficient Test.")
+            if not (-0.2 <= m_co <= 0.2):
+                print(f"Sequence {index} failed the Memory Coefficient Test.")
 
     # print if all the tests are passed ================================================================================
     if len(passed_sequences) == total_sequences:
