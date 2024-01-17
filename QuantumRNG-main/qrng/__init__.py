@@ -1,11 +1,6 @@
-__author__ = "Mark Carney aka @LargeCardinal"
-__copyright__ = "The Author"
-__license__ = "MIT"
-__status__ = "Proof of Concept - NOT FOR PRODUCTION"
-
-import qiskit 
-from qiskit import IBMQ
-
+import asyncio
+import qiskit
+from qiskit_ibm_provider import IBMProvider
 import math
 import sympy
 import secrets
@@ -17,8 +12,8 @@ import yaml
 
 
 class QuantumRNG(object):
-    def __init__(self, ibmqx_token='', ibm_token_file='ibm_secret.yml'):
-        self.sys_rng = secrets.SystemRandom()   
+    def __init__(self, ibmqx_token='', ibm_token_file='../example-ibm_secret.yml'):
+        self.sys_rng = secrets.SystemRandom()
         self.qc_entropy_pool = "{0:b}".format(self.sys_rng.randrange(3*10**100,4*10**100))
         self.seed = secrets.randbelow(5*10**100)
         # prepare the first seeds and fix the random primes
@@ -36,7 +31,7 @@ class QuantumRNG(object):
             ibmqx_token = ibm_secrets['ibm_api_key']
         self.provider = self.set_ibmq_provider(ibmqx_token)
         self.rng_circuit = self.make_circuit(15)
-        self.ibmq_backend = self.provider.get_backend('ibmq_16_melbourne')
+        self.ibmq_backend = self.provider.get_backend('ibmq_qasm_simulator')
 
     # small CSPRNG from here: https://www.johndcook.com/blog/2017/09/21/a-cryptographically-secure-random-number-generator/
     # tweaked to match the original paper (not using mod 2, but the proper parity of the output from x*x mod M)
@@ -68,7 +63,7 @@ class QuantumRNG(object):
             bit_string += str(b)
         # update the seed
         self.seed = x
-        # update bit count
+        # update bits count
         self.reseed_count += N
         if self.reseed_count % 8192 == 0:
             print("[i] Random bits at count {0} are: {1}".format(self.reseed_count, bit_string))
@@ -114,17 +109,15 @@ class QuantumRNG(object):
     def set_ibmq_provider(ibmqx_token):
         if ibmqx_token == '':
             provider = qiskit.BasicAer
-        else: 
-            IBMQ.save_account(ibmqx_token, overwrite=True)
-            IBMQ.load_account()
-            provider = IBMQ.get_provider('ibm-q')
+        else:
+            provider = IBMProvider(ibmqx_token)
         return provider
     
     @staticmethod
     def make_circuit(n=15):
         # This quantum circuit takes n-many qubits, and then puts them into 
         # superposition with a Hadamard operation (transpiled to a Z-rotation, usually).
-        # We then measure each qubit and put the ouputs into a register of n-bits in length
+        # We then measure each qubit and put the outputs into a register of n-bits in length
         # and then return that back. -MC
         qr = qiskit.QuantumRegister(n)
         cr = qiskit.ClassicalRegister(n)
@@ -146,13 +139,22 @@ class QuantumRNG(object):
         # up to 2^14 times, and get 15 bits each time with little risk of things overlapping! 
         # (Why? Because pigeonhole principle, and random...)
         # Thus in one job we can theoretically get up to 122,880 (15*8292) bits of good, pure,
-        # quantum-ly-derived entropy! :-D The only problem; it isn't secret to us...
+        # quantum-ly-derived entropy!:- D The only problem; it isn't secret to us...
         if self.ibmq_backend.remaining_jobs_count() > 4:
             # if enough jobs are left en queue...
-            job = qiskit.execute(self.rng_circuit, self.ibmq_backend, shots=shots)
-            bits = self.get_bits_from_counts(job.result().get_counts())
+            # create an event loop object
+            loop = asyncio.get_event_loop()
+            # use asyncio=True as a dictionary with use_asyncio and loop keys
+            job = qiskit.execute(self.rng_circuit, self.ibmq_backend, shots=shots,
+                                 asyncio={"use_asyncio": True, "loop": loop})
+            # wait for the job to finish
+            job.wait_for_final_state()
+            # get the result
+            result = job.result()
+            # get the bits from the counts
+            bits = self.get_bits_from_counts(result.get_counts())
         else:
-            print("[!] No free jobs - using system randomnes...")
+            print("[!] No free jobs - using system randomness...")
             # return some system-y randomness
             bits = "{0:b}".format(self.sys_rng.randrange(2*10**100, 3*10**100))
         return bits
@@ -160,17 +162,17 @@ class QuantumRNG(object):
     def get_quantum_bits(self, n=512):
         print("[*] running bg IBMQ process")
         # default to get ceil(512/15) random bits from QC ...
-        numshots = math.ceil(n/self.rng_circuit.width()*2)
+        num_shots = math.ceil(n / self.rng_circuit.width() * 2)
         # go get the quantum! -MC
-        bits_from_qc = self.run_ibmq_circuit(shots=numshots)
+        bits_from_qc = self.run_ibmq_circuit(shots=num_shots)
         # hash everything to make the most of the quantum :P
         current_e_pool = self.qc_entropy_pool
-        # clear the pool.. or not -MC
+        # clear the pool. or not -MC
         # self.qc_entropy_pool = ""
         m = hashlib.sha3_512()
         # Mixing it up twice by hashing the new bits and the old pool both ways...
         # This is basically using Keccak as an 'entropy expander' twice. 
-        # Reason for this is that our quantumly random bits aren't secret to only us,
+        # Reason for this is that our Quantum random bits aren't secret to only us,
         # and the entropy may be mismatched with our local os.urandom output, 
         # so this should normalise it. :-) -MC
         for i in range(math.floor(len(bits_from_qc)/512)):
@@ -180,5 +182,19 @@ class QuantumRNG(object):
         self.qc_entropy_pool += ''.join(format(byte, '08b') for byte in m.digest())
         print("[i] Updated the entropy pool with {0} bits from IBMQ, {1} bits after hashing...".format(len(bits_from_qc),(math.floor(len(bits_from_qc)/512)+1)*512))
         return
-    
+
+
+if __name__ == "__main__":
+    # Example usage or test cases can be added here
+
+    # Example 1: Create an instance of QuantumRNG
+    quantum_rng = QuantumRNG(ibmqx_token='', ibm_token_file='../example-ibm_secret.yml')
+
+    # Example 2: Generate random bits
+    random_bits = quantum_rng.get_rand_bitstring(N=128)
+    print(f"Generated random bits: {random_bits}")
+
+    # Example 3: Generate random bytes
+    random_bytes = quantum_rng.get_rand_bytes(N=16)
+    print(f"Generated random bytes: {random_bytes}")
 
