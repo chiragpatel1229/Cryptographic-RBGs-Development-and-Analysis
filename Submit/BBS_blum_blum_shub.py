@@ -13,7 +13,7 @@ from math import gcd
 
 # 0.0 =========== User Inputs ==========================================================================================
 
-seq_length = 10000                     # Set the desired length of the sequence
+seq_length = 1024                     # Set the desired length of the sequence
 
 
 # 1.0 =========== Blum Blum Shub Class =================================================================================
@@ -78,14 +78,14 @@ class BBS:
         while gcd(self.n, self.x) != 1:       # check the greatest common divisor of the modulus and the seed, which should not be 1.
             self.x = secrets.randbelow(self.n)  # Generate a random number between 0 and n
 
-        self.x = pow(self.x, 2) % self.n
+        self.x = pow(self.x, 2, self.n)
 
-        return self.x        # Return the square of x with modulo n
+        return self.x                       # Return the square of x with modulo n
 
     # 1.7 =========== Generate the requested bits ======================================================================
     def generateBits(self, Req_Length):
 
-        bitsArray = []                  # create an empty buffer to store the sequence
+        bitsArray = []                      # create an empty buffer to store the sequence
 
         Req_Length += 1                     # Increment the length amount by one
 
@@ -111,9 +111,9 @@ def is_prime(C_num):                      # check the number is prime or not
 
     for i in range(2, int(C_num ** 0.5) + 1):   # Iterate from 2 to the square root of the number + 1
         if C_num % i == 0:                # Check the given number is divisible by current integer in the selected range
-            return False                # if it is divisible then return false
+            return False                  # if it is divisible then return false
 
-    return True                         # if there is no divisor of the given number return True
+    return True                           # if there is no divisor of the given number return True
 
 
 # 3.0 =========== Generate prime numbers in the given range a to b =====================================================
@@ -150,5 +150,5 @@ Q_bit = prime_list[Q_ind]               # assign the random prime number from th
 bbs = BBS(P_bit, Q_bit)
 bits = bbs.generateBits(seq_length)
 
-# print(bits)
+print(bits)
 print("Number of Zeros: ", bits.count(0), "\nNumber of Ones: ", bits.count(1))

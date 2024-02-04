@@ -14,9 +14,9 @@ reseed counter limit is reached then the DRBG has to be reseeded again."""
 
 # 0.0 =========== User Inputs ==========================================================================================
 
-security_strength = 112                              # The strength should be = (112, 128, 192, 256)
+security_strength = 256                              # The strength should be = (112, 128, 192, 256)
 
-output_bytes = 32                                    # input will be in bytes, it should be less than 7500
+output_bytes = 7500 // 8                                    # input will be in bytes, it should be less than 7500
 
 
 # 1.0 =========== Convert The Data Types to Store ======================================================================
@@ -130,7 +130,7 @@ class Hash_DRBG:
 
     def generate(self, num_bytes: int):
         # B.1.3.1
-        if (num_bytes * 8) > 7500:
+        if (num_bytes * 8) > pow(2, 12):
             raise RuntimeError("It is not possible to generate more than 7500 bits in a single call.")
 
         # B.1.3.6

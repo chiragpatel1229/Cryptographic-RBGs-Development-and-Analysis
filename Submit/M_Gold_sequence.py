@@ -14,11 +14,11 @@ the code need to be modified accordingly in the sections 5.0 and 6.0"""
 # 0.0 ================================= USER INPUTS ====================================================================
 
 polynomial_1 = [15, 5, 3, 2]                # Any poly. can be selected here as an input
-polynomial_2 = [19, 7, 5, 2]                # Any poly. can be selected here as an input
+polynomial_2 = [19, 7, 5, 4]                # Any poly. can be selected here as an input
 initial_state_1 = None                      # if None, the initial state will be random
 initial_state_2 = None                      # if None, the initial state will be random
 
-seq_len = [100]                              # sequence length can be both a [single integer or a list]
+seq_len = [1000]                              # sequence length can be both a [single integer or a list]
 
 # select the "index-number" from the seq_len list to generate the Gold sequence ========================================
 selected_index_number_for_gold_seq = 1      # select the number from 1 to end of list from seq_len

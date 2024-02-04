@@ -1,8 +1,12 @@
 import struct
 import os
 
-"""The chacha20 block cipher generates 512 bits per execution but a very small change in the input, even a single byte
-can produce completely different output"""
+
+"""
+-> The chacha20 block cipher generates 512 bits per execution but a very small change in the input, even a single byte
+   of change in the input can produce completely different output
+-> This algorithm is tested against the given parameters in the research paper
+"""
 # References: ChaCha20 and Poly1305 for IETF Protocols: RFC 8439
 
 

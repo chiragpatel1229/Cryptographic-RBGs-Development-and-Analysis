@@ -68,7 +68,7 @@ class Generator:
         print(self.cipher)
         result = b''
         for i in range(n):
-            result += self.cipher.encrypt(self.counter())  # Use the ctr object instead of the function call
+            result += self.cipher.encrypt(self.counter(), )  # Use the ctr object instead of the function call
         return result
 
     @profile

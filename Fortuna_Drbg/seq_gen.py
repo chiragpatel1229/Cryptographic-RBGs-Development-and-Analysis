@@ -9,7 +9,6 @@ accumulator = Accumulator()
 seed = os.urandom(2)
 print("Generated random seed:", seed)
 
-
 accumulator.generator.reseed(seed)
 
 # Create an instance of the SeedCreator class and call its seed_update method

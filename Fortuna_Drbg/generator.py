@@ -32,7 +32,7 @@ class Generator:
         assert self.key != b''
         result = b''
         for i in range(n):
-            result += self.cipher.encrypt(self.counter())
+            result += self.cipher.encrypt(self.counter(), )
         return result
 
     # Generate random data

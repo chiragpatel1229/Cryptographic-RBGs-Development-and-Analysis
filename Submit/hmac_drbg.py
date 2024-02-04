@@ -18,7 +18,7 @@ reseed counter limit is reached then the DRBG has to be reseeded again."""
 
 security_strength = 112                              # The strength should be = (112, 128, 192, 256)
 
-output_bytes = 32                                    # input will be in bytes, it should be less than 7500
+output_bytes = 7500 // 8                                    # input will be in bytes, it should be less than 7500
 
 # 1.0 =========== Convert The Data Types to Store ======================================================================
 
@@ -127,7 +127,7 @@ class HMAC_DRBG:
     def generate(self, num_bytes: int, requested_security_strength: int = 256):
 
         # Check limits of on the number of requested bits ==============================================================
-        if (num_bytes * 8) > 7500:
+        if (num_bytes * 8) > pow(2, 12):
             raise RuntimeError("It is not possible to generate more than 7500 bits in a single call.")
 
         # Check requested security strength  ===========================================================================

@@ -5,12 +5,21 @@ import secrets
 import threading
 import hashlib
 
+'''
+-> This algorithm takes carefully considered quantum random bits using hash.sha-3 function to produce a seed value 
+    for the bit generation process using the blum blum shub method.
+    
+-> IBM-backend can be changed in section 1.4 and the user API token should be loaded in the separate file name 
+    'my_API_token.txt' for the convenience.
+    
+-> This algorithm does not utilise the quantum generated bits directly, instead it performs hashing on each bit first
+    and then add them to the entropy pool for the further bit production.
+'''
 # 0.0  User Inputs =====================================================================================================
 
-number_of_bits = 256
+number_of_bits = 256        # number of bits to generate
 
-number_of_bytes = 0
-
+number_of_bytes = 0         # number of byts to generate
 
 # 1.0 Quantum random bit generator =====================================================================================
 
@@ -22,7 +31,7 @@ class QuantumRNG(object):
     def __init__(self, Token_file_path):
 
         # https://docs.python.org/3/library/secrets.html
-        # Using the most secure source of randomness provided by the operating system
+        # Using secure source of randomness provided by the operating system
 
         self.Token_file_path = Token_file_path
         self.sec_ = secrets.SystemRandom()                 # create an instance of the system random class
@@ -146,7 +155,7 @@ class QuantumRNG(object):
         M = self.p * self.q             # calculate the modulus of two prime numbers
 
         if self.reseed_count > self.reseed_interval:  # if the reseed count is reached the interval update the seed value
-            self._update()              # update the seed value
+            self._update()              # update the seed value using the entropy pool
 
         x = self.seed                   # set the seed to generate the bits based on BBS principal
 
@@ -180,15 +189,14 @@ class QuantumRNG(object):
 
 # 2.0 Execute the Quantum Random Bit Generator class ===================================================================
 
-# Create an instance of QuantumRNG
+# Create an instance of QuantumRNG =====================================================================================
 quantum_rng = QuantumRNG('my_API_token.txt')
 
-# Generate random bits
+# Generate random bits =================================================================================================
 random_bits = quantum_rng.ran_bits(n_req_bits=number_of_bits)
 print(f"Generated random bits: {random_bits}")
 
+# Generate random bytes ================================================================================================
 if number_of_bytes > 1:
-    # Generate random bytes
     random_bytes = quantum_rng.ran_bytes(N=number_of_bytes)
     print(f"Generated random bytes: {random_bytes}")
-

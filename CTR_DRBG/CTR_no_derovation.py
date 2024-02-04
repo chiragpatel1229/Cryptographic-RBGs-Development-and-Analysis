@@ -1,9 +1,10 @@
 from Crypto.Cipher import AES
-from Crypto.Util.Padding import pad
 import os
 import secrets
 
 '''
+This algorithm follows the instructions of without a derivation function mentioned in section B.4 on page - 86.
+ 
 -> References: The CTR-DRBG mechanism based on NIST SP800-90A Publication
 -> Please consider all the Input parameters in bytes...
 -> A single output fix block length is 128 bits or 16 bytes
@@ -18,15 +19,12 @@ import secrets
 the string internally using the device's entropy pool. But a user can provide desired inputs.'''
 sel_CTR_cipher_name = 'AES256'                          # Select one cipher from this list ('aes128', 'aes192', 'aes256')
 in_seed = None                                          # For the initial seed length can be [48, 40, 32] bytes
-per_str = None                                          # personalise string length should be equal to seed length
-output_bytes = 32                                       # OUTPUT bytes: 32 * 8 = 256 bits < 4000 bits or 500 byts
-
-# ============== Use the Derivation Function with a Block Cipher Algorithm =============================================
-in_put_string = b'Test String to check the Block Cipher function.'          # use any string to create a cipher text
-bits_to_return = 128                                    # the return bits should be less than 512 bytes
+per_str = None                                          # personalise string length should not exceed 32 bytes
+output_bytes = 32                                      # OUTPUT bytes: 32 * 8 = 256 bits < 4000 bits or 500 byts
 
 
 # 1.0 =========== Convert The Data Types to print or Store the final output ============================================
+
 def b2i(data):                                              # convert bytes to a list of integers
     binary_string = ''                                      # Convert each byte to a binary string and join them
     for byte in data:
@@ -36,6 +34,7 @@ def b2i(data):                                              # convert bytes to a
 
 
 # 2.0 =========== Convert The Data Types for convenience ===============================================================
+
 def strings_xor(a, b):                              # XOR two byte strings
     x_str = bytes(x ^ y for x, y in zip(a, b))
     return x_str
@@ -97,7 +96,7 @@ class CTRDRBG:                                      # class for CTR-DRBG mechani
         if entropy is None:
             entropy = os.urandom(self.seed_length)       # Obtain an entropy source that can provide at least 48 bytes of random bytes
         if data is None:
-            data = b'Indian cuisine is most favourite!' + b'\x25'  # Provide a personalization string that is unique to your application and 48 bytes long
+            data = b'Indian cuisine is good!'            # Provide a personalization string that is unique to your application and 48 bytes long
 
         # ===== Verify the Entropy Input conditions ====================================================================
         if len(entropy) != self.seed_length:
@@ -106,10 +105,11 @@ class CTRDRBG:                                      # class for CTR-DRBG mechani
         # ===== Verify the personalization string conditions ===========================================================
 
         if data:                                    # If data is provided, xor it with the entropy after padding
-            if len(data) > self.seed_length:
-                raise ValueError(f'Only { self.seed_length} bytes of data supported.')
+            '''32 is for without derivation function'''
+            if len(data) > 32:                      # 32 is for without derivation function
+                raise ValueError(f'Only 32 bytes = 256 bits of data supported.')
 
-            bytes_padding(data, self.seed_length)
+            data = bytes_padding(data, 32)
             seed_material = strings_xor(entropy, data)
 
         else:                                       # Otherwise, use the entropy as the seed material
@@ -136,11 +136,12 @@ class CTRDRBG:                                      # class for CTR-DRBG mechani
             raise Warning("The CTR Class is require to reseeded now !!!")
 
         if data:                                    # if the data is provided by the user
-            if len(data) > self.seed_length:        # Check the length of the data
+            if len(data) > 32:        # Check the length of the data
                 raise ValueError('Additional data is more than required !!!')
 
         else:                                       # if data is not provided then Use the internally provided data
             data = b'A user can add here anything. Based on NIST standards'  # it can be any length, later used padding in the next step
+            data = bytes_padding(data, 32)
 
         self.key, self.V = self.update(data, self.key, self.V)
 
@@ -158,7 +159,7 @@ class CTRDRBG:                                      # class for CTR-DRBG mechani
 
             temp += self.cipher.new(K, AES.MODE_ECB).encrypt(V)     # Encrypt the counter with the key and append it to the buffer
 
-        # ===== Prepare the generate function for the next execution   ===================================================
+        # ===== Prepare the generate function for the next execution ===================================================
 
         self.key, self.V = self.update(data or b'', K, V)  # Update the key and the counter with the data or zeros
 
@@ -178,8 +179,9 @@ class CTRDRBG:                                      # class for CTR-DRBG mechani
                 raise ValueError('Additional data is more than required !!!')
 
         else:                                       # Use internal data if data is not provided
-            data = b'A user can add here anything. Based on NIST standards'  # it can be any length, used padding in the next step
-            data = bytes_padding(data, self.seed_length)
+            '''32 is for without derivation function'''
+            data = b'A user can add here anything.'  # it can be any length, used padding in the next step
+            data = bytes_padding(data, 32)
 
         if len(entropy) != self.seed_length:
             raise ValueError(f'Too much entropy. it should be {self.seed_length}')
@@ -219,98 +221,6 @@ class CTRDRBG:                                      # class for CTR-DRBG mechani
 
         return Key, V                               # Return the new key and counter
 
-    # 3.5 ==============================================================================================================
-    # Block_Encrypt is used for convenience in the specification of the BCC function. This function is not specifically defined in this Recommendation
-    # A basic encryption operation that uses the selected block cipher algorithm. page - 61
-    @staticmethod
-    def Block_Encrypt(Key, input_block):
-        # the basic encryption operation is called the forward cipher operation (see [SP 800-67]); for AES,
-        # the basic encryption operation is called the cipher operation (see [FIPS 197]).
-        # The basic encryption operation is equivalent to an encryption operation on a single block of data using the ECB mode.
-
-        cipher = AES.new(Key, AES.MODE_ECB)                                 # create a hash object to encrypt the data using the key
-        output_block = cipher.encrypt(pad(input_block, AES.block_size))     # encrypt the input block provided by the block cipher function
-
-        return output_block                         # return the hashed block for the provided data
-
-    # 3.5 ==============================================================================================================
-    # For the BCC function, let outlen be the length of the output block of the block cipher algorithm to be used.
-    def BCC(self, Key, data):
-
-        # data: The data to be operated upon. Note that the length of data must be a multiple of outlen.
-        # This is guaranteed by Block_Cipher_df process steps 4 and 8.1 in Section 10.3.2.
-        # The length of data must be a multiple of outlen.
-        remindr = len(data) % self.out_length               # find the reminder
-        if remindr != 0:                                    # check if the length of data is no multiple of out length
-            padding_len = self.out_length - remindr         # find the required bytes
-            data += b'\x00' * padding_len                   # add the required zero bytes
-
-        chaining_value = bytes([0]*self.out_length)         # Set the first chaining value to outlen zeros.
-        n = len(data) // self.out_length
-
-        # 3.Starting with the leftmost bits of data, split data into n blocks of outlen bits each, forming block-1 to block-n.
-        blocks = []
-        for i in range(0, len(data), self.out_length):
-            block = data[i:i + self.out_length]             # separate the blocks of out length
-            blocks.append(block)
-
-        for i in range(n):
-            input_block = []
-            for a, b in zip(chaining_value, blocks[i]):     # XOR each block with changing value byte string
-                xor_result = a ^ b
-                input_block.append(xor_result)
-            input_block = bytes(input_block)
-
-            chaining_value = self.Block_Encrypt(Key, input_block)   # get the new value for each iteration
-
-        output_block = chaining_value
-        return output_block
-
-    # 3.5 ==============================================================================================================
-    # 10.3.2 Derivation Function Using a Block Cipher Algorithm (Block_Cipher_df) page - 59
-    def Block_Cipher_df(self, input_string, no_of_bits_to_return):
-
-        # The maximum length (max_number_of_bits) is 512 bits for the currently approved block cipher algorithms. p-59
-        max_number_of_bits = 512
-        if no_of_bits_to_return > max_number_of_bits:           # point 1 - error flag p-59
-            return 'ERROR_FLAG', None
-
-        # L is the bitstring representation of the integer resulting from len (input_string)/8.
-        L = len(input_string) // 8
-        L = L.to_bytes(4, 'big')                                # L shall be represented as a 32-bit integer.
-
-        # N is the bitstring representation of the integer resulting from number_of_bits_to_return/8.
-        N = no_of_bits_to_return // 8
-        N = N.to_bytes(4, 'big')                                # N shall be represented as a 32-bit integer.
-
-        # Prepend the string length and the requested length of the output to the input_string.
-        S = L + N + input_string + b'\x80'                      # string length s is prepares as recommended on p-60
-
-        while len(S) % (self.out_length // 8) != 0:             # Pad S with zeros, if necessary.
-            S += b'\x00'
-
-        temp_1 = b''                                            # prepare the empty buffer for to store the bytes
-        i = 0
-        i = i.to_bytes(4, 'big')
-        K = self.key
-
-        while len(temp_1) < self.seed_length:                   # seed length = keylen + outlen
-            IV = i + b'\x00' * ((self.out_length // 8) - 4)     # The 32-bit integer representation of i is padded with zeros to outlen bits.
-            temp_1 += self.BCC(K, IV + S)
-            i += 1
-
-        # Compute the requested number of bits now p-60
-        K = temp_1[:self.key_length // 8]                       # trim the data from the temp_1 byte string equal to key length
-        X = temp_1[self.key_length // 8:self.seed_length]
-
-        temp_2 = b''                                            # prepare the empty buffer for to store the bytes
-        while len(temp_2) < no_of_bits_to_return:
-            X = self.Block_Encrypt(K, X)
-            temp_2 += X
-
-        requested_bits = temp_2[:no_of_bits_to_return]
-        return 'SUCCESS', requested_bits
-
 
 # 4.0 =========== Call the class and its functions, required input data is =============================================
 # =============== being generated inside the function so the user does not need to add it manually =====================
@@ -318,9 +228,4 @@ class CTRDRBG:                                      # class for CTR-DRBG mechani
 drbg = CTRDRBG(sel_CTR_cipher_name)                 # initialize or select the security strength
 drbg.instantiate(in_seed, per_str)                  # initiate the algorithm with the fresh entropy and the personalizing string
 random_bytes = drbg.generate(output_bytes)          # select the number of bytes to generate and the personalizing string
-print(b2i(random_bytes), "\nTotal number of Bits:", len(b2i(random_bytes)))      # print the generated bytes converted in the list of integers
-
-# Use Block_Cipher_df function
-status, req_bits = drbg.Block_Cipher_df(in_put_string, bits_to_return)
-print(f"Status: {status}, \nRequested Bits: {req_bits}")
-print(len(req_bits))
+print(b2i(random_bytes), "\n", "Total number of Bits:", len(b2i(random_bytes)))      # print the generated bytes converted in the list of integers

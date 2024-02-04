@@ -120,7 +120,8 @@ class AES_DRBG(object):
 
         while len(temp) < self.seed_length:             # Loop until the temporary byte string == seed length
 
-            output_block = self.aes.encrypt(bytes_padding(b"\x00", self.out_length))  # Encrypt a string of zeros with the current key and counter
+            output_block = self.aes.encrypt(
+                bytes_padding(b"\x00", self.out_length), )  # Encrypt a string of zeros with the current key and counter
             temp = temp + output_block                  # Append output block to the temporary byte string
 
         temp = temp[0:self.seed_length]                 # Trim the temp string == seed length
@@ -205,7 +206,8 @@ class AES_DRBG(object):
 
             block_128 = bytes_padding(b"\x00", self.out_length)  # Generate string of zero == default output block length
 
-            output_block = self.aes.encrypt(block_128)  # Encrypt block_128 with the current key and counter, and get an output block of 128 bits
+            output_block = self.aes.encrypt(
+                block_128, )  # Encrypt block_128 with the current key and counter, and get an output block of 128 bits
 
             temp = temp + output_block                  # collect the output blocks to the temporary byte string
 
