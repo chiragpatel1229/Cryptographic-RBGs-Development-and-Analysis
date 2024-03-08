@@ -3,22 +3,25 @@ import hmac
 import os
 import secrets
 
-"""The security strength is the entropy that is required to initiate and reseed the DRBG. For HASH and HMAC the output
+"""
+The security strength is the entropy that is required to initiate and reseed the DRBG. For HASH and HMAC the output
 length is equal to the security strength per request, if more bits then the loop has to iterate further until the 
-reseed counter limit is reached then the DRBG has to be reseeded again."""
+reseed counter limit is reached then the DRBG has to be reseeded again.
+"""
 
-# References: The HASH-DRBG mechanism based on NIST SP800-90A Publication
+# References: The HMAC-DRBG mechanism based on NIST SP800-90A Publication
 # Please consider all the Input parameters in bytes...
 
 # This file generates only one sequence per execution the reseed is not required, while generating more than one sequences and the
 # reseed counter reach the max interval leval the drbg need to be reseeded using the reseed function with new entropy and data
+# Comments and the variable names are also referenced from the given NIST document
 
 
 # 0.0 =========== User Inputs ==========================================================================================
 
 security_strength = 112                              # The strength should be = (112, 128, 192, 256)
 
-output_bytes = 7500 // 8                                    # input will be in bytes, it should be less than 7500
+output_bytes = 7500 // 8                             # input will be in bytes, it should be less than 7500
 
 # 1.0 =========== Convert The Data Types to Store ======================================================================
 
@@ -60,8 +63,8 @@ class HMAC_DRBG:
 
         # Internal state variables  ====================================================================================
 
-        entropy = os.urandom(self.security_strength // 8 * 2)                 # (security strength * 1.5) < init_entropy < (125 bytes)
-        personalization_string = secrets.token_bytes(30)                      # (security_strength bits) < nonce < (256 bits / 32 bytes)
+        entropy = os.urandom(self.security_strength // 8 * 2)           # (security strength * 1.5) < init_entropy < (125 bytes)
+        personalization_string = secrets.token_bytes(30)                # (security_strength bits) < nonce < (256 bits / 32 bytes)
 
         # Modified from Section 10.1.1, which specified 440 bits here ==================================================
         if len(personalization_string) * 8 > 256:
@@ -88,7 +91,7 @@ class HMAC_DRBG:
         self.K = self.hmac(self.K, self.V + b"\x00" + (b"" if provided_data is None else provided_data))
         self.V = self.hmac(self.K, self.V)
 
-        if provided_data is not None:                   # Additional update steps if provided_data is not None
+        if provided_data is not None:                  # Additional update steps if provided_data is not None
             self.K = self.hmac(self.K, self.V + b"\x01" + provided_data)
             self.V = self.hmac(self.K, self.V)
 
@@ -109,7 +112,7 @@ class HMAC_DRBG:
 
     def reseed(self):       # Reseed the generator with additional entropy
 
-        entropy = os.urandom(self.security_strength // 8 + 3)                 # (security strength * 1.5) < init_entropy < (125 bytes)
+        entropy = os.urandom(self.security_strength // 8 + 3)      # (security strength * 1.5) < init_entropy < (125 bytes)
 
         # Check entropy length as per the requirements =================================================================
         if (len(entropy) * 8) < self.security_strength:

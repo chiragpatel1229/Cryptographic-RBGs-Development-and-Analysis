@@ -1,10 +1,10 @@
-import adaptive__repetition_count
-import b_chisquare_ind
-import b_goodness_of_fit
-import burstiness_para
-import chi_square
-import Markov_Test
-import memory_coeff
+from Tests_NIST import adaptive__repetition_count
+from Tests_NIST import b_chisquare_ind
+from Tests_NIST import b_goodness_of_fit
+from Tests_NIST import burstiness_para
+from Tests_NIST import chi_square
+from Tests_NIST import Markov_Test
+from Tests_NIST import memory_coeff
 
 """ if the input sequence length is not (256 or 512) the binary_chisquare_independence_test results will differ, in that case the 
  upper and lower values of 'score_i' has to be changed manually """
@@ -14,18 +14,15 @@ import memory_coeff
 def test_sequences(file_path):
 
     # Read and get a list of binary sequences from the selected file. ==================================================
-
     sequences = []
     with open(file_path, 'r') as file:
         for each_seq in file:
             sequences.append(each_seq.strip())
 
     # count the total numbers of sequences =============================================================================
-
     total_sequences = len(sequences)
 
     # Test each sequence using selected test algorithms ===============================================================
-
     passed_sequences = []                                       # store the sequence that has passed the test
     for index, sequence in enumerate(sequences, start=1):
 

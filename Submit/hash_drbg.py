@@ -2,21 +2,24 @@ import hashlib
 import os
 import secrets
 
-"""The security strength is the entropy that is required to initiate and reseed the DRBG. For HASH and HMAC the output
+"""
+The security strength is the entropy that is required to initiate and reseed the DRBG. For HASH and HMAC the output
 length is equal to the security strength per request, if more bits then the loop has to iterate further until the 
-reseed counter limit is reached then the DRBG has to be reseeded again."""
+reseed counter limit is reached then the DRBG has to be reseeded again.
+"""
 
 # References: The HASH-DRBG mechanism based on NIST SP800-90A Publication
 # Please consider all the Input parameters in bytes...
 
 # This file generates only one sequence per execution so the reseed is not required, while generating more than one sequences and the
 # reseed counter reach the max interval leval the drbg need to be reseeded using the reseed function with new entropy and data
+# Comments and the variable names are also referenced from the given NIST document
 
 # 0.0 =========== User Inputs ==========================================================================================
 
 security_strength = 256                              # The strength should be = (112, 128, 192, 256)
 
-output_bytes = 7500 // 8                                    # input will be in bytes, it should be less than 7500
+output_bytes = 7500 // 8                             # input will be in bytes, it should be less than 7500
 
 
 # 1.0 =========== Convert The Data Types to Store ======================================================================
@@ -83,7 +86,7 @@ class Hash_DRBG:
 # 2.1 ==================================================================================================================
 
     @staticmethod                                           # Simple wrapper for SHA-256 hash function
-    def hash(data: bytes) -> bytes:                        # Updating and manipulating the internal state
+    def hash(data: bytes) -> bytes:                         # Updating and manipulating the internal state
         return hashlib.sha256(data).digest()                # return Hash Digest as a bytes object
 
 # 2.2 ==================================================================================================================

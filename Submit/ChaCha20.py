@@ -74,7 +74,7 @@ def chacha20_block(key, counter, nonce):
         s_s = list(state)                                   # steady state list for the iterations bcz it is mutable in python
         # steady state will store the result from the for loop
 
-        for _ in range(10):                                             # Total 20 rounds = (8 quarter rounds) * 10
+        for _ in range(10):                                 # Total 20 rounds = (8 quarter rounds) * 10
             quarter_round(s_s, 0, 4, 8, 12)   # Column rounds
             quarter_round(s_s, 1, 5, 9, 13)   # Column rounds
             quarter_round(s_s, 2, 6, 10, 14)  # Column rounds
@@ -105,3 +105,6 @@ def chacha20_block(key, counter, nonce):
 
 sequence = chacha20_block(key_in, counter_in, nonce_in)
 print(b2i(sequence), "\n", "Total number of Bits:", len(b2i(sequence)))
+
+from Tests_NIST import tests
+tests.tests(sequence)

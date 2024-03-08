@@ -17,8 +17,8 @@ provider = IBMProvider("966bbf0869e7e72d9db993ddcf646794695d32a38f8e9f0d76eb6553
 # print(provider.backends())                              # Check the available backends
 backend = provider.get_backend('ibmq_qasm_simulator')             # select the backend device or simulator
 
-q = QuantumRegister(32, 'q')                            # set Quantum Register with up-to 63 qubits
-c = ClassicalRegister(32, 'c')                          # set Classical Register with up-to 63 qubits
+q = QuantumRegister(16, 'q')                            # set Quantum Register with up-to 63 qubits
+c = ClassicalRegister(16, 'c')                          # set Classical Register with up-to 63 qubits
 
 circuit = QuantumCircuit(q, c)                          # Create Quantum Circuit using the Quantum and Classical Registers
 

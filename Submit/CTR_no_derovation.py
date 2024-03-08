@@ -11,6 +11,7 @@ This algorithm follows the instructions of without a derivation function mention
 
 -> This file generates only one sequence per execution the reseed is not required, while generating more than one sequences and the
 -> reseed counter reach the max interval leval the drbg need to be reseeded using the reseed function with new entropy and data
+-> Comments and the variable names are also referenced from the given NIST document
 '''
 
 

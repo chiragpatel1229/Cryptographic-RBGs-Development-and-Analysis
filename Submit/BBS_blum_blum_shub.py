@@ -3,7 +3,8 @@ import secrets
 import sympy
 from math import gcd
 
-'''This is a Blum Blum Shub Algorithm to generate pseudo random numbers using the prime numbers.
+'''
+-> This is a Blum Blum Shub Algorithm to generate pseudo random numbers using the prime numbers.
 
 -> This algorithm generates a list of prime numbers between 0 to 1000, and selects random index number from the list to 
    assign it to the p and q to generate the random sequence. 

@@ -6,11 +6,14 @@ import threading
 import hashlib
 
 '''
--> This algorithm takes carefully considered quantum random bits using hash.sha-3 function to produce a seed value 
+-> This algorithm takes carefully consider quantum random bits using hash.sha-3 function to produce a seed value 
     for the bit generation process using the blum blum shub method.
     
+-> For the quick and convenient process of bit generation and analysis, currently a simulator is being used as a
+    Backend provider.    
+    
 -> IBM-backend can be changed in section 1.4 and the user API token should be loaded in the separate file name 
-    'my_API_token.txt' for the convenience.
+    'my_API_token.txt' for the convenience. Also the Backend provider can be a real quantum device check section 1.4.
     
 -> This algorithm does not utilise the quantum generated bits directly, instead it performs hashing on each bit first
     and then add them to the entropy pool for the further bit production.
@@ -41,7 +44,7 @@ class QuantumRNG(object):
 
         x = self.sec_.randrange(7 * 10 ** 100, 11 * 10 ** 100)  # Get the first random int to create a random prime
         y = self.sec_.randrange(7 * 10 ** 100, 11 * 10 ** 100)  # Get the second random int to create a random prime
-        # self._update()                                     # just to show that the quantum bits are being added to the entropy pool
+        # self._update()                                        # just to show that the quantum bits are being added to the entropy pool
 
         self.p = self.next_prime(x)                        # set the prime number for p based on the x value
         self.q = self.next_prime(y)                        # set the prime number for q based on the y value
@@ -53,9 +56,9 @@ class QuantumRNG(object):
 
     def next_prime(self, Original_prime):
         next_usable_prime = sympy.nextprime(Original_prime)  # get the very first possible next prime number
-        while next_usable_prime % 4 != 3:                  # very important to check the selected prime must be congruent to 3 modulo 4
+        while next_usable_prime % 4 != 3:                    # very important to check the selected prime must be congruent to 3 modulo 4
             next_usable_prime = sympy.nextprime(next_usable_prime)  # keep trying until the condition is satisfied
-        if self.seed % next_usable_prime == 0:             # check for the modulus of seed and next usable prime, find another prime number
+        if self.seed % next_usable_prime == 0:               # check for the modulus of seed and next usable prime, find another prime number
             next_usable_prime = self.next_prime(next_usable_prime + 1)
         return next_usable_prime
 
@@ -95,13 +98,14 @@ class QuantumRNG(object):
         # 1.4.1 Get the API token and activate the provider and set the backend for generate the bits ==================
         with open(self.Token_file_path, 'r') as API_token:      # open the file in read mode
             My_token = API_token.read().strip()                 # read the token
+        # My_token = ""                                         # Comment out the text file reader and add your personal token here
         provider = IBMProvider(str(My_token))                   # set the ibm provider using the token
 
         backend = provider.get_backend('simulator_mps')         # set the backend that is fast and can provide more qubits
 
         # 1.4.2 Design the quantum circuit to generate the bits ========================================================
         quantum_R = QuantumRegister(80)                         # max 100 qubits but used only 80 here for better response
-        class_R = ClassicalRegister(80)         # it should be the same as the qubits
+        class_R = ClassicalRegister(80)                         # it should be the same as the qubits
         circuit = QuantumCircuit(quantum_R, class_R)
         circuit.h(quantum_R)                                    # apply hadamard gate
         circuit.measure(quantum_R, class_R)
@@ -133,9 +137,9 @@ class QuantumRNG(object):
 
         q_bits = self.Quantum_circuit()             # get the quantum generated random bit string
         current_e_pool = self.entropy               # assign the entropy pool to the new variable
-        cjp = hashlib.sha3_256()                      # hash everything to make the most of the quantum
+        cjp = hashlib.sha3_256()                    # hash everything to make the most of the quantum
 
-        for i in range(len(q_bits) // 256 + 1):       # loop to hash each quantum bit
+        for i in range(len(q_bits) // 256 + 1):     # loop to hash each quantum bit
 
             bits2hash = str(current_e_pool + q_bits[i * 256:(i + 1) * 256]).encode('utf-8')     # get chunks of 256 bits
             cjp.update(bits2hash)                   # perform hashing on chunks of 256 bits
@@ -176,24 +180,24 @@ class QuantumRNG(object):
 
         b = self.ran_bits(n_req_bits=N * 8)     # use the random bits function to generate the requested bytes
 
-        b = b + '0' * (8 - len(b) % 8)  # making sure that the length of the bits is multiple of 8
+        b = b + '0' * (8 - len(b) % 8)          # making sure that the length of the bits is multiple of 8
 
-        int_v = int(b, 2)               # Convert the bit to an equivalent integer number
+        int_v = int(b, 2)                       # Convert the bit to an equivalent integer number
 
-        num_bytes = (len(b) + 7) // 8   # Get the required bytes to generate
+        num_bytes = (len(b) + 7) // 8           # Get the required bytes to generate
 
         b_str = int_v.to_bytes(num_bytes, byteorder='big')  # Convert an integer to byte string using the inbuilt function
 
-        return b_str                    # return the bytes converted from the generated random bits
+        return b_str                            # return the bytes converted from the generated random bits
 
 
 # 2.0 Execute the Quantum Random Bit Generator class ===================================================================
 
 # Create an instance of QuantumRNG =====================================================================================
-quantum_rng = QuantumRNG('my_API_token.txt')
+quantum_rng = QuantumRNG('API_token.txt')
 
 # Generate random bits =================================================================================================
-random_bits = quantum_rng.ran_bits(n_req_bits=number_of_bits)
+random_bits = quantum_rng.ran_bits(n_req_bits=number_of_bits)       # This function can be used in a loop for constant bit production
 print(f"Generated random bits: {random_bits}")
 
 # Generate random bytes ================================================================================================

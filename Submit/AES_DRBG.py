@@ -2,16 +2,18 @@ import pyaes
 import os
 import secrets
 
+'''
+-> References: The AES-DRBG mechanism based on NIST SP800-90A Publication
+-> Please consider all the Input parameters in bytes...
 
-# References: The AES-DRBG mechanism based on NIST SP800-90A Publication
-# Please consider all the Input parameters in bytes...
+-> Page: 48 - 10.2.1 : for AES, the output block lengths are 128 bits. The same block cipher algorithm and key length shall be used
+-> for all block cipher operations of this DRBG. The block cipher algorithm and key length shall meet or exceed the
+-> security requirements of the consuming application.
 
-# Page: 48 - 10.2.1 : for AES, the output block lengths are 128 bits. The same block cipher algorithm and key length shall be used
-# for all block cipher operations of this DRBG. The block cipher algorithm and key length shall meet or exceed the
-# security requirements of the consuming application.
-
-# This file generates only one sequence per execution the reseed is not required, while generating more than one sequences and the
-# reseed counter reach the max interval leval the drbg need to be reseeded using the reseed function with new entropy and data
+-> This file generates only one sequence per execution the reseed is not required, while generating more than one sequences and the
+-> reseed counter reach the max interval leval the drbg need to be reseeded using the reseed function with new entropy and data
+-> Comments and the variable names are also referenced from the given NIST document
+'''
 
 # 0.0 =========== User Inputs ==========================================================================================
 '''When the in_seed (initial seed) and per_str (personalise string) values are None, the algorithm provides itself the seed and 
@@ -20,7 +22,7 @@ sel_AES_security_strength = 256             # Select the strength from this list
 in_seed = None                              # For the initial seed length check the lines from 76 to 86
 per_str = None                              # personalise string length should be equal to seed length
 
-output_bytes = 12                           # OUTPUT bytes: 32 * 8 = 256 bits < 4000 bits or 500 bytes
+output_bytes = 64                           # OUTPUT bytes: 32 * 8 = 256 bits < 4000 bits or 500 bytes
 
 # 1.0 ===== Convert The Data Types for convenience =====================================================================
 
@@ -97,7 +99,7 @@ class AES_DRBG(object):
         if entropy_in is None:
             entropy_in = os.urandom(self.seed_length)       # Obtain an entropy source that can provide at least 48 bytes of random bytes
         if personalization_string is None:
-            personalization_string = b'Indian cuisine is most favourite!' + b'\x25'  # Provide a personalization string that is unique to your application and 48 bytes long
+            personalization_string = b'Indian cuisine is most favourite!' + b'\x25'  # Provide a personalization string that is unique for the application and 48 bytes long
 
         # 2.2.1 ===== Verify the Entropy Input conditions ==============================================================
 
@@ -226,7 +228,7 @@ class AES_DRBG(object):
                 add_in = bytes_padding(add_in, self.seed_length)
 
         else:                                           # Use internal data if data is not provided
-            data = b'A user can add here anything. Based on NIST standards'  # it can be any length, used padding in the next step
+            data = b'User can write anything here!' + secrets.token_bytes(2)  # it can be any length, used padding in the next step
             add_in = bytes_padding(data, self.seed_length)
 
         # Call the update method with the additional input as an argument, and update the key and the counter
