@@ -35,7 +35,7 @@ def b2i(data):                                              # convert bytes to a
 # 2.0 =========== Hash DRBG class ======================================================================================
 
 class Hash_DRBG:
-    def __init__(self, selected_strength: int = 256):    # data = personalized byte string
+    def __init__(self, selected_strength: int = 256):
 
         # Internal state variables  ====================================================================================
         self.V = None

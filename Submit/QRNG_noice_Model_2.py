@@ -18,6 +18,7 @@ from qiskit_ibm_runtime import QiskitRuntimeService
 # Ref: https://docs.quantum.ibm.com/verify/building_noise_models#noise-model-examples
 """To test this algorithm Please use the jupiter notebook on IMB portal -> https://lab.quantum.ibm.com 
 
+https://qiskit.github.io/qiskit-aer/stubs/qiskit_aer.AerSimulator.html
 UPDATE: batched_shots_gpu_max_qubits (int): This option sets the maximum number of qubits for enabling the batched_shots_gpu option. 
 If the number of active circuit qubits is greater than this value batching of simulation shots will not be used. (Default: 16).
 Now to design a circuit for aer simulator the maximum bit size is fixed to max 16 qubits for accuracy and precision purpose in the new update.
