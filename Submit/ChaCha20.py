@@ -36,19 +36,19 @@ def chacha20_block(key, counter, nonce):
     def rounds(a, b, c, d):             # ChaCha20 quarter round function to manage state wise operation
         a = (a + b) & 0xFFFFFFFF        # Addition and XOR operations on the states
         d = (d ^ a) & 0xFFFFFFFF
-        d = (d << 16) | (d >> 16)       # performs a bit-wise circular shift to the right and left, lastly 'OR' "|" between both
+        d = (d << 16) | (d >> 7)       # performs a bit-wise circular shift to the right and left, lastly 'OR' "|" between both
 
         c = (c + d) & 0xFFFFFFFF
         b = (b ^ c) & 0xFFFFFFFF
-        b = (b << 12) | (b >> 20)       # "<<" means 'b' to the left by 12 positions = multiplying 'b' by 2^12
+        b = (b << 12) | (b >> 9)       # "<<" means 'b' to the left by 12 positions = multiplying 'b' by 2^12
 
         a = (a + b) & 0xFFFFFFFF
         d = (d ^ a) & 0xFFFFFFFF        # "0xFFFFFFFF" is to make sure the result will always be a 32-bit unsigned integer
-        d = (d << 8) | (d >> 24)
+        d = (d << 8) | (d >> 13)
 
         c = (c + d) & 0xFFFFFFFF
         b = (b ^ c) & 0xFFFFFFFF
-        b = (b << 7) | (b >> 25)        # ">>" means 'b' to the right by 25 positions = dividing 'b' by 2^25
+        b = (b << 7) | (b >> 18)        # ">>" means 'b' to the right by 25 positions = dividing 'b' by 2^25
 
         return a, b, c, d               # Return the modified states of the selected index
 
