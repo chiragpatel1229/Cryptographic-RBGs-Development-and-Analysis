@@ -6,15 +6,15 @@ for encryption and decryption.
 The secret key can be provided using the secrets or os library to gain more reliable entropy.
 Here, S is the state vector, and K is the key vector.
 
-The input key length can be from 1 to 256 bytes (8 to 2048 bits), the suggested key length is minimum 40 bytes according to wiki
-The plain text can be any length as it
+The input key can be any length,
+The plain text can be any length.
 
 """""
 
 
 # 0.0 =========== User Inputs ==========================================================================================
 from os import urandom
-# byte_key = urandom(12)                      # key length can be from 1 to 256 bytes
+# byte_key = urandom(12)
 byte_key = b'secret key for encryption!'
 
 plain_text = b'This algorithm is used for encrypt and decrypt the message using the same secret key!'
@@ -40,26 +40,26 @@ class RC4:
         self.index_j = 0                          # the index for Key
 
     # 1.2 ===== Perform key scheduling on the state and key to update the variable values ==============================
-    """The state vector (S) is prepared to encrypt or decrypt the data using the provided key in a pseudo random manner 
+    """The state vector is prepared to encrypt or decrypt the data using the provided key in a pseudo random manner 
     in this KSA function"""
 
     def KSA(self):                                          # Perform the key scheduling algorithm (KSA) to permute States
         for i in range(256):
-            self.index_j = (self.index_j + self.State[i] + self.Key[i]) % 256         # j is updated based on S, K and i
+            self.index_j = (self.index_j + self.State[i] + self.Key[i]) % 256         # j is updated based on State, Key and i
             self.State[i], self.State[self.index_j] = self.State[self.index_j], self.State[i]     # swap S[i] and S[j]
 
     # 1.3 ===== Use the PRGA method to generate a single byte for encryption or decryption ===================================
 
     def generate(self):                                     # PRGA - Generate a key-stream byte using the pseudo-random generation algorithm (PRGA)
         self.index_s = (self.index_s + 1) % 256             # increment i by 1 modulo 256
-        self.index_j = (self.index_j + self.State[self.index_s]) % 256          # update j based on S and i
-        self.State[self.index_s], self.State[self.index_j] = self.State[self.index_j], self.State[self.index_s]  # swap S[i] and S[j]
-        t = (self.State[self.index_s] + self.State[self.index_j]) % 256         # compute t as the sum of S[i] and S[j] modulo 256
-        return self.State[t] ^ self.State[self.index_s]     # return the key-stream byte from S XORed with S[i]
+        self.index_j = (self.index_j + self.State[self.index_s]) % 256          # update j based on State and index
+        self.State[self.index_s], self.State[self.index_j] = self.State[self.index_j], self.State[self.index_s]  # swap State[i] and State[j]
+        t = (self.State[self.index_s] + self.State[self.index_j]) % 256         # compute t (temporary vector) as the sum of State[i] and State[j] modulo 256
+        return self.State[t] ^ self.State[self.index_s]     # return the key-stream byte from State of t XORed with State[i]
 
     # 1.4 ===== A single function for encryption and decryption of provided data =======================================
 
-    def crypt(self, message):                               # Encrypt or decrypt a message by XORing it with the key-stream
+    def en_de_crypt(self, message):                         # Encrypt or decrypt a message by XORing it with the key-stream
         cipher = []                                         # initialize an empty list to store the cipher
         self.KSA()                                          # call the KSA method to permute S
         for byte in message:                                # for each byte in the message
@@ -82,10 +82,10 @@ def b2i(data):                                              # convert bytes to a
 # 3.0 =========== call the Class and its function ======================================================================
 
 drbg_1 = RC4(byte_key)                                      # Create an RC4 object with the user selected key
-cipher_text = drbg_1.crypt(plain_text)                      # Encrypt the provided plain text using the secret key
+cipher_text = drbg_1.en_de_crypt(plain_text)  # Encrypt the provided plain text using the secret key
 
 drbg_2 = RC4(byte_key)                                      # Create an RC4 object with the user selected key
-plain = drbg_2.crypt(cipher_text)                           # Decrypt the cypher text using the secret key
+plain = drbg_2.en_de_crypt(cipher_text)  # Decrypt the cypher text using the secret key
 
 print("Cipher Text: ", cipher_text, "\n\nBinary Bits: ", b2i(cipher_text), "\n")          # Print the cipher text
 print("Converted Plain text: ", plain)                      # print the decrypted text from cypher text

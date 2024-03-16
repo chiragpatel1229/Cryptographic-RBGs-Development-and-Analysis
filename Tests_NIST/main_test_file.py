@@ -93,7 +93,7 @@ def test_sequences(file_path):
 
 
 # provide the file paths
-file1_path = '../Chacha/ChaCha20_Stream_Cipher_Sequences.txt'
+file1_path = '../data/Synthetic.txt'
 
 # Test sequences and get the list of passed sequences
 test_sequences(file1_path)

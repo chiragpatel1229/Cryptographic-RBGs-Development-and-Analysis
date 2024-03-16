@@ -33,7 +33,7 @@ def rct(bitstring):             # Repetition Count Test
         else:                   # Reset the current bit and the count
             current = bit
             counter = 1
-    print("The sequence has passed the Repetition Count Test!!!")
+    # print("The sequence has passed the Repetition Count Test!!!")
     return True                 # Return True to indicate a success
 
 
@@ -72,7 +72,7 @@ def apt(bitstring):                     # Adaptive Proportion Test
 
         if count > cutoff:              # Check if the count exceeds the cutoff
             return False                # Return False to indicate a failure
-    print("The sequence has passed the Adaptive Proportion Test!!!")
+    # print("The sequence has passed the Adaptive Proportion Test!!!")
     # Return True to show a success
     return True
 
