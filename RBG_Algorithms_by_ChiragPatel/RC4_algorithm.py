@@ -61,7 +61,7 @@ class RC4:
 
     def en_de_crypt(self, message):                         # Encrypt or decrypt a message by XORing it with the key-stream
         cipher = []                                         # initialize an empty list to store the cipher
-        self.KSA()                                          # call the KSA method to permute S
+        self.KSA()                                          # call the KSA method to permute State
         for byte in message:                                # for each byte in the message
             keystream_byte = self.generate()                # generate a key-stream byte using PRGA
             cipher_byte = keystream_byte ^ byte             # XOR the key-stream byte with the message byte

@@ -43,9 +43,9 @@ def mul_inv(encrypt_val, phi):                 # Extended Euclidean Algorithm to
     y1_val = 1
     temp_phi = phi                            # Make a copy of phi, used to perform the division
 
-    while encrypt_val > 0:                    # While e is greater than 0, condition is true keep iterating
+    while encrypt_val > 0:                    # While encrypt_val is greater than 0, condition is true keep iterating
         temp1 = temp_phi // encrypt_val       # Keep updating the variables
-        temp2 = temp_phi - temp1 * encrypt_val     # until the value of e becomes 0
+        temp2 = temp_phi - temp1 * encrypt_val     # until the value of encrypt_val becomes 0
         temp_phi = encrypt_val
         encrypt_val = temp2
 
