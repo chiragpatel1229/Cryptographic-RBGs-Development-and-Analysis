@@ -217,7 +217,7 @@ class QuantumRNG(object):
 
 # 2.0 Execute the Quantum Random Bit Generator class ===================================================================
 
-# Create an instance of QuantumRNG =====================================================================================
+# Create an instance of SyntheticRNG =====================================================================================
 quantum_rng = QuantumRNG('API_token.txt')
 
 # Generate random bits =================================================================================================

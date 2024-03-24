@@ -14,7 +14,7 @@ from math import gcd
 
 # 0.0 =========== User Inputs ==========================================================================================
 
-seq_length = 1024                     # Set the desired length of the sequence
+seq_length = 4000                     # Set the desired length of the sequence
 
 
 # 1.0 =========== Blum Blum Shub Class =================================================================================
@@ -101,7 +101,7 @@ class BBS:
             else:
                 bitsArray.append(1)      # If odd, append 1 to the list of bits
 
-        return bitsArray                 # Return the list of bits
+        return ''.join(map(str, bitsArray))                 # Return the list of bits
 
 
 # 2.0 =========== Check the provided number is prime or not ============================================================
@@ -148,8 +148,16 @@ Q_bit = prime_list[Q_ind]               # assign the random prime number from th
 
 # 5.0 =========== call the Class and its function ======================================================================
 
-bbs = BBS(P_bit, Q_bit)
-bits = bbs.generateBits(seq_length)
+# bbs = BBS(P_bit, Q_bit)
+# bits = bbs.generateBits(seq_length)
+# print(bits)
 
-print(bits)
-print("Number of Zeros: ", bits.count(0), "\nNumber of Ones: ", bits.count(1))
+# Open a file to write
+with open("BBS_blum_blum_shub.txt", "w") as file:
+    for _ in range(100):
+        # Create a new BBS object for each sequence generation
+        bbs = BBS(P_bit, Q_bit)
+        bits = bbs.generateBits(seq_length)
+        file.write(bits + '\n')
+
+print("Random bits have been stored in BBS_blum_blum_shub.txt")

@@ -193,7 +193,7 @@ class QuantumRNG(object):
 if __name__ == "__main__":
     # Example usage or test cases can be added here
 
-    # Example 1: Create an instance of QuantumRNG
+    # Example 1: Create an instance of SyntheticRNG
     quantum_rng = QuantumRNG(ibm_token_file='../example-ibm_secret.yml')
 
     # Example 2: Generate random bits

@@ -20,7 +20,7 @@ the string internally using the device's entropy pool. But a user can provide de
 sel_CTR_cipher_name = 'AES256'                          # Select one cipher from this list ('aes128', 'aes192', 'aes256')
 in_seed = None                                          # For the initial seed length can be [48, 40, 32] bytes
 per_str = None                                          # personalise string length should be equal to seed length
-output_bytes = 64                                       # OUTPUT bytes: 32 * 8 = 256 bits < 4000 bits or 500 byts
+output_bytes = 500                                       # OUTPUT bytes: 32 * 8 = 256 bits < 4000 bits or 500 byts
 
 # ============== Use the Derivation Function with a Block Cipher Algorithm =============================================
 in_put_string = b'Test String to check the Block Cipher function.'          # use any string to create a cipher text

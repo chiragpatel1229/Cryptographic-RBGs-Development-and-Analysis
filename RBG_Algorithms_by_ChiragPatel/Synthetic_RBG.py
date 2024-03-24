@@ -4,6 +4,7 @@ import sympy
 import secrets
 import threading
 import hashlib
+import time
 
 '''
 -> This algorithm takes carefully consider quantum random bits using hash.sha-3 function to produce a seed value 
@@ -20,12 +21,12 @@ import hashlib
 '''
 # 0.0  User Inputs =====================================================================================================
 
-number_of_bits = 4000        # number of bits to generate
+number_of_bits = 5000        # number of bits to generate
 
 # 1.0 Quantum random bit generator =====================================================================================
 
 
-class QuantumRNG(object):
+class SyntheticRNG(object):
 
     # 1.1 Initiate the quantum class ===================================================================================
 
@@ -42,9 +43,9 @@ class QuantumRNG(object):
         print("Length of the entropy:", length)
         self.seed = secrets.randbelow(7 * 10 ** 100)       # Generate a random number from 0 to the given number (0, n-1)
 
-        x = self.sec_.randrange(7 * 10 ** 100, 11 * 10 ** 100)  # Get the first random int to create a random prime
-        y = self.sec_.randrange(7 * 10 ** 100, 11 * 10 ** 100)  # Get the second random int to create a random prime
-        # self._update()                                        # just to show that the quantum bits are being added to the entropy pool
+        x = self.sec_.randrange(17 * 10 ** 100, 31 * 10 ** 100)  # Get the first random int to create a random prime
+        y = self.sec_.randrange(17 * 10 ** 100, 31 * 10 ** 100)  # Get the second random int to create a random prime
+        # self._update()                                         # just to show that the quantum bits are being added to the entropy pool
 
         self.p = self.next_prime(x)                        # set the prime number for p based on the x value
         self.q = self.next_prime(y)                        # set the prime number for q based on the y value
@@ -70,13 +71,13 @@ class QuantumRNG(object):
     # 1.3 The update function will be called automatically while refilling the entropy pool is required ================
 
     def _update(self):
-        print("[i] Update: The entropy and the seed value is being updated.\n")
+        # print("[i] Update: The entropy and the seed value is being updated.\n")
 
         # 1.3.1 It is the quickest way to provide reliable entropy in case of requirement ==============================
 
-        if len(self.entropy) < 512:                     # use the system entropy bcz the generating quantum bits takes time
-            sel_int = self.sec_.randrange(2 * 10 ** 100, 5 * 10 ** 100)     # select a random number between the given range
-            sel_int = self.next_prime(sel_int)
+        if len(self.entropy) < 1024:                     # use the system entropy bcz the generating quantum bits takes time
+            sel_int = self.sec_.randrange(2 * 10 ** 1000, 5 * 10 ** 1000)     # select a random number between the given range
+            sel_int = sympy.nextprime(sel_int)
             local_bits = "{0:b}".format(sel_int)        # convert the random number in to its binary format
             self.entropy += local_bits                  # add this binary format to the current entropy pool
             # print(f"[ii] Update: Added {len(local_bits)} bits from local entropy pool.\n")   # inform about the added bits
@@ -101,7 +102,7 @@ class QuantumRNG(object):
     # 1.4 This function is to refill the entropy pool with new hashed bits =============================================
 
     def Refill_entropy(self):
-        print("[i] Entropy Refill process is started!\n")
+        # print("[i] Entropy Refill process is started!\n")
 
         q_bits = self.Quantum_circuit()             # get the quantum generated random bit string
         # print(f"[ii] Received initial {len(q_bits)} bits from a quantum circuit!\n")
@@ -132,7 +133,7 @@ class QuantumRNG(object):
         self.entropy += ''.join(m_bytes)
 
         # print(f"[iii] Refill: Total of {len(self.entropy)} bits available in the entropy pool.")
-        print("[i] Entropy pool is Refilled!\n")
+        # print("[i] Entropy pool is Refilled!\n")
 
 
     # 1.5 A quantum bit generator ======================================================================================
@@ -154,7 +155,7 @@ class QuantumRNG(object):
         circuit = QuantumCircuit(quantum_R, class_R)
         circuit.h(quantum_R)                                    # apply hadamard gate
         circuit.measure(quantum_R, class_R)
-        print("[i] Quantum circuit is executed!\n")
+        # print("[i] Quantum circuit is executed!\n")
 
         # 1.5.3 Collect the measured bits from the quantum bit generation process ======================================
         key_1, key_2, key_3, key_4, key_5 = "", "", "", "", ""     # buffer to store the quantum generated random bits
@@ -199,7 +200,7 @@ class QuantumRNG(object):
             bit_string += str(b)        # add the binary bits to the buffer
 
         self.seed = x                   # update the seed value with the new unique number
-        self.reseed_count += n_req_bits  # update bits count
+        self.reseed_count += n_req_bits // 10  # update bits count
 
         return bit_string               # return a bit string
 
@@ -207,10 +208,18 @@ class QuantumRNG(object):
 
 # 2.0 Execute the Quantum Random Bit Generator class ===================================================================
 
-# Create an instance of QuantumRNG =====================================================================================
-quantum_rng = QuantumRNG('API_token.txt')
+# Create an instance of SyntheticRNG =====================================================================================
+quantum_rng = SyntheticRNG('Synthetic_API_token.txt')
 
 # Generate random bits =================================================================================================
-for _ in range(0,1):
-    random_bits = quantum_rng.ran_bits(n_req_bits=number_of_bits)       # This function can be used in a loop for constant bit production
-    print(random_bits)
+# for _ in range(0,1):
+#     random_bits = quantum_rng.ran_bits(n_req_bits=number_of_bits)       # This function can be used in a loop for constant bit production
+#     print(random_bits)
+
+# Open a file to write
+with open("Synthetic_RBG.txt", "w") as file:
+    for _ in range(100):
+        random_bits = quantum_rng.ran_bits(n_req_bits=number_of_bits)
+        file.write(random_bits + '\n')
+
+print("Random bits have been stored in random_bits.txt")

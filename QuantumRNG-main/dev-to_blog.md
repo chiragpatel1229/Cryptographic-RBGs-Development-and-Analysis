@@ -1,4 +1,4 @@
-# QuantumRNG-aaS - Harnessing quantum algorithms for useful services
+# SyntheticRNG-aaS - Harnessing quantum algorithms for useful services
 
 We have all heard the hype...
 
@@ -166,7 +166,7 @@ Or anything else you can think of to get good quality randomness to those who ne
 
 For those who want to see a PoC flask-based API service (only two endpoints, but it should be quite illustrative) then have a look at the following github repo:
 
-{% github Santandersecurityresearch/QuantumRNG no-readme %} 
+{% github Santandersecurityresearch/SyntheticRNG no-readme %} 
 
 But if you want an all-in-one script to play with, we have that, too! Now I have discussed the base theory - here is the proof-of-concept script! 
 

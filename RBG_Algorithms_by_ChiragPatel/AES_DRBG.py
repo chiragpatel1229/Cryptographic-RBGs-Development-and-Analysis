@@ -22,7 +22,7 @@ sel_AES_security_strength = 256             # Select the strength from this list
 in_seed = None                              # For the initial seed length check the lines from 76 to 86
 per_str = None                              # personalise string length should be equal to seed length
 
-output_bytes = 64                           # OUTPUT bytes: 32 * 8 = 256 bits < 4000 bits or 500 bytes
+output_bytes = 500                           # OUTPUT bytes: 32 * 8 = 256 bits < 4000 bits or 500 bytes
 
 # 1.0 ===== Convert The Data Types for convenience =====================================================================
 
@@ -265,3 +265,11 @@ drbg = AES_DRBG(sel_AES_security_strength)      # Create an instance of the AES_
 drbg.instantiate(in_seed, per_str)                              # Call the instantiate method with the entropy input and the personalization string
 random_bytes = drbg.generate(output_bytes)      # Call the generate method with the number of bytes you want to generate
 print(b2i(random_bytes))                        # Print the random binary sequence in hexadecimal format
+
+# Open a file to write
+with open("AES_DRBG.txt", "w") as file:
+    for _ in range(100):
+        random_bytes = drbg.generate(output_bytes)
+        file.write(b2i(random_bytes) + '\n')
+
+print("Random bits have been stored in random_bits.txt")
