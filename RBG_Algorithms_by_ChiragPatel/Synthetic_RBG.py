@@ -20,7 +20,7 @@ import hashlib
 '''
 # 0.0  User Inputs =====================================================================================================
 
-number_of_bits = 512        # number of bits to generate
+number_of_bits = 4000        # number of bits to generate
 
 # 1.0 Quantum random bit generator =====================================================================================
 
@@ -36,8 +36,10 @@ class QuantumRNG(object):
 
         self.Token_file_path = Token_file_path
         self.sec_ = secrets.SystemRandom()                 # create an instance of the system random class
-        sel_int = self.sec_.randrange(5 * 10 ** 100, 7 * 10 ** 100)   # select an integer between given range (a, b-1)
+        sel_int = self.sec_.randrange(5 * 10 ** 1000, 7 * 10 ** 10000)   # select an integer between given range (a, b-1)
         self.entropy = "{0:b}".format(sel_int)             # converted the selected integer into the binary format
+        length = len(str(self.entropy))
+        print("Length of the entropy:", length)
         self.seed = secrets.randbelow(7 * 10 ** 100)       # Generate a random number from 0 to the given number (0, n-1)
 
         x = self.sec_.randrange(7 * 10 ** 100, 11 * 10 ** 100)  # Get the first random int to create a random prime
@@ -46,6 +48,11 @@ class QuantumRNG(object):
 
         self.p = self.next_prime(x)                        # set the prime number for p based on the x value
         self.q = self.next_prime(y)                        # set the prime number for q based on the y value
+
+        length = len(str(self.p))
+        print("Length of the large integer P:", length)
+        length = len(str(self.q))
+        print("Length of the large integer Q:", length)
 
         self.reseed_count = 0                              # set the reseed interval counter to 0
         self.reseed_interval = 2048                        # reseed entropy pool based on the requirements
@@ -68,7 +75,8 @@ class QuantumRNG(object):
         # 1.3.1 It is the quickest way to provide reliable entropy in case of requirement ==============================
 
         if len(self.entropy) < 512:                     # use the system entropy bcz the generating quantum bits takes time
-            sel_int = self.sec_.randrange(2 * 10 ** 100, 3 * 10 ** 100)     # select a random number between the given range
+            sel_int = self.sec_.randrange(2 * 10 ** 100, 5 * 10 ** 100)     # select a random number between the given range
+            sel_int = self.next_prime(sel_int)
             local_bits = "{0:b}".format(sel_int)        # convert the random number in to its binary format
             self.entropy += local_bits                  # add this binary format to the current entropy pool
             # print(f"[ii] Update: Added {len(local_bits)} bits from local entropy pool.\n")   # inform about the added bits
@@ -203,6 +211,6 @@ class QuantumRNG(object):
 quantum_rng = QuantumRNG('API_token.txt')
 
 # Generate random bits =================================================================================================
-for _ in range(0,30):
+for _ in range(0,1):
     random_bits = quantum_rng.ran_bits(n_req_bits=number_of_bits)       # This function can be used in a loop for constant bit production
     print(random_bits)
