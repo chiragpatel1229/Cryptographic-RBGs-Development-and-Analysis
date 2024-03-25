@@ -13,12 +13,12 @@ the code need to be modified accordingly in the sections 5.0 and 6.0"""
 
 # 0.0 ================================= USER INPUTS ====================================================================
 
-polynomial_1 = [15, 5, 3, 2]                # Any poly. can be selected here as an input
-polynomial_2 = [19, 7, 5, 4]                # Any poly. can be selected here as an input
-initial_state_1 = None                      # if None, the initial state will be random
-initial_state_2 = None                      # if None, the initial state will be random
+polynomial_1 = [23, 15, 5, 3, 2]                # Any poly. can be selected here as an input
+polynomial_2 = [21, 19, 7, 5, 4]                # Any poly. can be selected here as an input
+initial_state_1 = None                          # if None, the initial state will be random
+initial_state_2 = None                          # if None, the initial state will be random
 
-seq_len = [1000]                              # sequence length can be both a [single integer or a list]
+seq_len = [4000]                                # sequence length can be both a [single integer or a list]
 
 # select the "index-number" from the seq_len list to generate the Gold sequence ========================================
 selected_index_number_for_gold_seq = 1      # select the number from 1 to end of list from seq_len
@@ -132,22 +132,32 @@ def print_Seq(parameters_name, seq, len_list):
 
 
 # 5.0 ===== Generate and Print the m-sequences =========================================================================
-M_sequence_1 = generate_m_sequence(polynomial_1, seq_len, initial_state_1)
-M_sequence_2 = generate_m_sequence(polynomial_2, seq_len, initial_state_2)
+# M_sequence_1 = generate_m_sequence(polynomial_1, seq_len, initial_state_1)
+# M_sequence_2 = generate_m_sequence(polynomial_2, seq_len, initial_state_2)
+#
+# print_Seq("Polynomial_1", M_sequence_1, seq_len)        # print the generated results for 1st parameters
+# print_Seq("Polynomial_2", M_sequence_2, seq_len)        # print the generated results for 2nd parameters
+#
+# # 6.0 ===== Generate the gold-sequence =================================================================================
+#
+# index = int(selected_index_number_for_gold_seq) - 1     # adjust the index number because it starts from 0
+#
+# if not (0 <= index < len(M_sequence_1)):                # is the selected value is out of the list then raise an error
+#     raise ValueError("Selected index is out of range to generate an Gold sequence.")
+#
+# seq_1 = M_sequence_1[index]
+# seq_2 = M_sequence_2[index]
+# G_seq = Gold_Sequence(seq_1, seq_2)
+#
+# print(f"Gold Sequence with length of {len(G_seq)} bits: {G_seq}")
+# print(f"Gold Sequence Balance: 0s = {G_seq.count(0)}, 1s = {G_seq.count(1)}\n")
 
-print_Seq("Polynomial_1", M_sequence_1, seq_len)        # print the generated results for 1st parameters
-print_Seq("Polynomial_2", M_sequence_2, seq_len)        # print the generated results for 2nd parameters
+# Open a file to write
+with open("M_sequences.txt", "w") as file:
+    for _ in range(100):
+        M_sequence_2 = generate_m_sequence(polynomial_2, seq_len, initial_state_2)
+        a = ''.join(map(str, M_sequence_2))  # Convert each bit to a string
+        file.write(a + '\n')
 
-# 6.0 ===== Generate the gold-sequence =================================================================================
+print("Random bits have been stored in M_sequences.txt")
 
-index = int(selected_index_number_for_gold_seq) - 1     # adjust the index number because it starts from 0
-
-if not (0 <= index < len(M_sequence_1)):                # is the selected value is out of the list then raise an error
-    raise ValueError("Selected index is out of range to generate an Gold sequence.")
-
-seq_1 = M_sequence_1[index]
-seq_2 = M_sequence_2[index]
-G_seq = Gold_Sequence(seq_1, seq_2)
-
-print(f"Gold Sequence with length of {len(G_seq)} bits: {G_seq}")
-print(f"Gold Sequence Balance: 0s = {G_seq.count(0)}, 1s = {G_seq.count(1)}\n")

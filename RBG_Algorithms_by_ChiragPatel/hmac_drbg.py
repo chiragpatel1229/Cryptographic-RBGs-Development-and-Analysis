@@ -21,7 +21,7 @@ reseed counter limit is reached then the DRBG has to be reseeded again.
 
 security_strength = 112                              # The strength should be = (112, 128, 192, 256)
 
-output_bytes = 7500 // 8                             # input will be in bytes, it should be less than 7500
+output_bytes = 4000 // 8                             # input will be in bytes, it should be less than 7500
 
 # 1.0 =========== Convert The Data Types to Store ======================================================================
 
@@ -156,5 +156,14 @@ class HMAC_DRBG:
 # =============== being generated inside the function so the user does not need to add it manually =====================
 drbg = HMAC_DRBG(requested_security_strength=security_strength)
 drbg.reseed()
-random_seq = drbg.generate(num_bytes=output_bytes, requested_security_strength=security_strength)
-print(b2i(random_seq), "\n", "Total number of Bits:", len(b2i(random_seq)))
+# random_seq = drbg.generate(num_bytes=output_bytes, requested_security_strength=security_strength)
+# print(b2i(random_seq), "\n", "Total number of Bits:", len(b2i(random_seq)))
+
+# Open a file to write
+with open("hmac_drbg.txt", "w") as file:
+    for _ in range(100):
+        random_seq = drbg.generate(num_bytes=output_bytes, requested_security_strength=security_strength)
+        file.write(b2i(random_seq) + '\n')
+
+print("Random bits have been stored in random_bits.txt")
+

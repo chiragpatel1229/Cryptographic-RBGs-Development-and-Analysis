@@ -19,7 +19,7 @@ reseed counter limit is reached then the DRBG has to be reseeded again.
 
 security_strength = 256                              # The strength should be = (112, 128, 192, 256)
 
-output_bytes = 7500 // 8                             # input will be in bytes, it should be less than 7500
+output_bytes = 4000 // 8                             # input will be in bytes, it should be less than 7500
 
 
 # 1.0 =========== Convert The Data Types to Store ======================================================================
@@ -160,5 +160,13 @@ class Hash_DRBG:
 # =============== being generated inside the function so the user does not need to add it manually =====================
 
 drbg = Hash_DRBG(security_strength)
-random_seq = drbg.generate(output_bytes)
-print(b2i(random_seq), "\n", "Total number of Bits:", len(b2i(random_seq)))
+# random_seq = drbg.generate(output_bytes)
+# print(b2i(random_seq), "\n", "Total number of Bits:", len(b2i(random_seq)))
+
+# Open a file to write
+with open("hash_drbg.txt", "w") as file:
+    for _ in range(100):
+        random_seq = drbg.generate(output_bytes)
+        file.write(b2i(random_seq) + '\n')
+
+print("Random bits have been stored in random_bits.txt")

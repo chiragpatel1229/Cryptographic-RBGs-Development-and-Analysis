@@ -1,6 +1,5 @@
 import random
 import secrets
-from Tests_NIST import tests
 
 '''
 Reference: https://in.mathworks.com/help/gads/how-the-genetic-algorithm-works.html
@@ -16,8 +15,8 @@ Reference: https://in.mathworks.com/help/gads/how-the-genetic-algorithm-works.ht
 '''
 
 # 0.0 =========== initialise the Parameters to set the variable values =================================================
-total_population = 15                       # total size of the population of genomes
-Bit_length = 512                           # length of each genome (number of bits)
+total_population = 8                       # total size of the population of genomes
+Bit_length = 4000                           # length of each genome (number of bits)
 mutation_rate = 0.01                        # probability of mutating each bit
 gen = 20                                    # it is the number of generations (gen) to run the algorithm
 
@@ -92,7 +91,14 @@ for gen in range(gen):                          # Loop for the total number of g
 
 
 # 8.0 =========== Print the fittest individual from the last generation ===============================================
-fin_pop = selection(population)        # find the final population using the selection function
-print(fin_pop)                         # Print the best individual
+# fin_pop = selection(population)        # find the final population using the selection function
+# print(fin_pop)                         # Print the best individual
+# print(len(fin_pop))
 
-tests.tests(fin_pop)
+# Open a file to write
+with open("genetic_algorithm.txt", "w") as file:
+    for _ in range(10):
+        fin_pop = selection(population)
+        file.write(fin_pop + '\n')
+
+print("Random bits have been stored in random_bits.txt")
