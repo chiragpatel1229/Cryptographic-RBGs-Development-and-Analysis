@@ -153,11 +153,17 @@ def print_Seq(parameters_name, seq, len_list):
 # print(f"Gold Sequence Balance: 0s = {G_seq.count(0)}, 1s = {G_seq.count(1)}\n")
 
 # Open a file to write
-with open("M_sequences.txt", "w") as file:
+with open("../RBG_data_files/M_sequences.txt", "w") as file:
     for _ in range(100):
         M_sequence_2 = generate_m_sequence(polynomial_2, seq_len, initial_state_2)
-        a = ''.join(map(str, M_sequence_2))  # Convert each bit to a string
-        file.write(a + '\n')
+        f = []
+        for sequence in M_sequence_2:
+            for bit in sequence:
+                f.append(str(bit))
 
-print("Random bits have been stored in M_sequences.txt")
+        a_123 = ''.join(f)  # Convert each bit to a string
+        file.write(a_123 + '\n')
+
+print("Files is ready!")
+
 

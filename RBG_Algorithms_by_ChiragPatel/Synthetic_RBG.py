@@ -35,13 +35,17 @@ class SyntheticRNG(object):
         # https://docs.python.org/3/library/secrets.html
         # Using secure source of randomness provided by the operating system
 
+        self.reseed_count = 0  # set the reseed interval counter to 0
+        self.reseed_interval = 2048  # reseed entropy pool based on the requirements
+
         self.Token_file_path = Token_file_path
         self.sec_ = secrets.SystemRandom()                 # create an instance of the system random class
+
         sel_int = self.sec_.randrange(5 * 10 ** 1000, 7 * 10 ** 10000)   # select an integer between given range (a, b-1)
         self.entropy = "{0:b}".format(sel_int)             # converted the selected integer into the binary format
+
         length = len(str(self.entropy))
         print("Length of the entropy:", length)
-        self.seed = secrets.randbelow(7 * 10 ** 100)       # Generate a random number from 0 to the given number (0, n-1)
 
         x = self.sec_.randrange(17 * 10 ** 100, 31 * 10 ** 100)  # Get the first random int to create a random prime
         y = self.sec_.randrange(17 * 10 ** 100, 31 * 10 ** 100)  # Get the second random int to create a random prime
@@ -55,17 +59,21 @@ class SyntheticRNG(object):
         length = len(str(self.q))
         print("Length of the large integer Q:", length)
 
-        self.reseed_count = 0                              # set the reseed interval counter to 0
-        self.reseed_interval = 2048                        # reseed entropy pool based on the requirements
+        self.seed = secrets.randbelow(7 * 10 ** 100)        # Generate a random number from 0 to the given number (0, n-1)
+
 
     # 1.2  A function to find the next possible prime number to generate the modulus ===================================
 
     def next_prime(self, Original_prime):
+
         next_usable_prime = sympy.nextprime(Original_prime)  # get the very first possible next prime number
+
         while next_usable_prime % 4 != 3:                    # very important to check the selected prime must be congruent to 3 modulo 4
             next_usable_prime = sympy.nextprime(next_usable_prime)  # keep trying until the condition is satisfied
+
         if self.seed % next_usable_prime == 0:               # check for the modulus of seed and next usable prime, find another prime number
             next_usable_prime = self.next_prime(next_usable_prime + 1)
+
         return next_usable_prime
 
     # 1.3 The update function will be called automatically while refilling the entropy pool is required ================
@@ -116,7 +124,7 @@ class SyntheticRNG(object):
 
             # convert the hashed bytes to the binary string and add it to the entropy pool =============================
             b_str = []
-            for byte in cjp.digest():
+            for byte in cjp.digest():               # convert the digest to the binary string
                 b_2b = format(byte, '08b')
                 b_str.append(b_2b)
             self.entropy += ''.join(b_str)
@@ -185,7 +193,7 @@ class SyntheticRNG(object):
 
     # 1.6 This function is to generate random bits using the unique seed value =========================================
 
-    def ran_bits(self, n_req_bits=64):  # Generate random bits
+    def Generate(self, n_req_bits=64):  # Generate random bits
         M = self.p * self.q             # calculate the modulus of two prime numbers
 
         if self.reseed_count > self.reseed_interval:  # if the reseed count is reached the interval update the seed value
@@ -212,14 +220,14 @@ class SyntheticRNG(object):
 quantum_rng = SyntheticRNG('Synthetic_API_token.txt')
 
 # Generate random bits =================================================================================================
-# for _ in range(0,1):
-#     random_bits = quantum_rng.ran_bits(n_req_bits=number_of_bits)       # This function can be used in a loop for constant bit production
-#     print(random_bits)
+for _ in range(0,1):
+    random_bits = quantum_rng.Generate(n_req_bits=number_of_bits)       # This function can be used in a loop for constant bit production
+    print(random_bits)
 
 # Open a file to write
-with open("Synthetic_RBG.txt", "w") as file:
-    for _ in range(100):
-        random_bits = quantum_rng.ran_bits(n_req_bits=number_of_bits)
-        file.write(random_bits + '\n')
-
-print("Random bits have been stored in random_bits.txt")
+# with open("Synthetic_RBG.txt", "w") as file:
+#     for _ in range(100):
+#         random_bits = quantum_rng.Generate(n_req_bits=number_of_bits)
+#         file.write(random_bits + '\n')
+#
+# print("Files is ready!")

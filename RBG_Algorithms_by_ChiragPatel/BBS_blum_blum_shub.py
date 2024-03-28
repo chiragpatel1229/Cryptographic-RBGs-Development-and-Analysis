@@ -148,16 +148,16 @@ Q_bit = prime_list[Q_ind]               # assign the random prime number from th
 
 # 5.0 =========== call the Class and its function ======================================================================
 
-# bbs = BBS(P_bit, Q_bit)
-# bits = bbs.generateBits(seq_length)
-# print(bits)
+bbs = BBS(P_bit, Q_bit)
+bits = bbs.generateBits(seq_length)
+print(bits)
 
 # Open a file to write
-with open("BBS_blum_blum_shub.txt", "w") as file:
-    for _ in range(100):
-        # Create a new BBS object for each sequence generation
-        bbs = BBS(P_bit, Q_bit)
-        bits = bbs.generateBits(seq_length)
-        file.write(bits + '\n')
-
-print("Random bits have been stored in BBS_blum_blum_shub.txt")
+# with open("BBS_blum_blum_shub.txt", "w") as file:
+#     for _ in range(100):
+#         # Create a new BBS object for each sequence generation
+#         bbs = BBS(P_bit, Q_bit)
+#         bits = bbs.generateBits(seq_length)
+#         file.write(bits + '\n')
+#
+# print("Files is ready!")

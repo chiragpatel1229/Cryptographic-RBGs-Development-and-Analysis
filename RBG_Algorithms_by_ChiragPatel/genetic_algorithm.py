@@ -91,14 +91,14 @@ for gen in range(gen):                          # Loop for the total number of g
 
 
 # 8.0 =========== Print the fittest individual from the last generation ===============================================
-# fin_pop = selection(population)        # find the final population using the selection function
-# print(fin_pop)                         # Print the best individual
-# print(len(fin_pop))
+fin_pop = selection(population)        # find the final population using the selection function
+print(fin_pop)                         # Print the best individual
+print(len(fin_pop))
 
 # Open a file to write
-with open("genetic_algorithm.txt", "w") as file:
-    for _ in range(10):
-        fin_pop = selection(population)
-        file.write(fin_pop + '\n')
-
-print("Random bits have been stored in random_bits.txt")
+# with open("genetic_algorithm.txt", "w") as file:
+#     for _ in range(10):
+#         fin_pop = selection(population)
+#         file.write(fin_pop + '\n')
+#
+# print("Files is ready!")

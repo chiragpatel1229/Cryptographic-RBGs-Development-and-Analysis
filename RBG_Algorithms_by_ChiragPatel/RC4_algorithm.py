@@ -4,9 +4,8 @@ The RC4 (Rivest Cipher 4) algorithm is a symmetric stream cipher. it operates on
 for encryption and decryption.
 
 The secret key can be provided using the secrets or os library to gain more reliable entropy.
-Here, S is the state vector, and K is the key vector.
 
-The input key can be any length,
+The input key can be any length < 256,
 The plain text can be any length.
 
 """""
@@ -17,8 +16,9 @@ from os import urandom
 # byte_key = urandom(12)
 byte_key = b'secret key for encryption!'
 
-plain_text = b'This algorithm is used for encrypt and decrypt the message using the same secret key!'
-
+# plain_text = b'This algorithm is used for encrypt and decrypt the message using the same secret key!'
+plain_text = b'rKr3TsRqG2N6d4hFMqBdG5ddOSUW1dJjnmfrY3LNWpQTLqpftIotUhnPiKqtirfFaqW1quERXBntQAKjUeZwQmk17A34pEQOdEJ70GgdVMVOlZzAqiTzAv6xlqOUKpPnj5crEUWJyD4XPkyEYyPYaiMRC4eFLQb1AIG7lc25WklcVtVCzziU0CcoeXtH8Ox79HWOf5x24GVoJeOBn5qZU8rJ60yJVzjnuRUXgRcHp3TtRZcbict2Hc1uKQcvas95wdsqWEgyiu4TTpnjbKXi6r2kmcQ9hHvjLRMuq8ZPQuNE5BQhcMQ0ECSt8wBO0sXo0RtPOlwTa8qAOxFyRoLOwBkvoArCul6bbxxeF7ImbqDJJJRs2ROPONI4dlRImddAJkpgBiFzPDmwAPCtuy591XtglO9ZtdbO5qdp9XF3BeTzm3UPQEEMBEAJkpNNWoTpTqSVphe5eS0TaTCAKZHoX6BP2nEegzMrP9JMsgiBi2OKyW2iniqJ'
+print(len(plain_text))
 
 # 1.0 =========== RC4 DRBG class ======================================================================================
 class RC4:
@@ -87,5 +87,16 @@ cipher_text = drbg_1.en_de_crypt(plain_text)  # Encrypt the provided plain text 
 drbg_2 = RC4(byte_key)                                      # Create an RC4 object with the user selected key
 plain = drbg_2.en_de_crypt(cipher_text)  # Decrypt the cypher text using the secret key
 
-print("Cipher Text: ", cipher_text, "\n\nBinary Bits: ", b2i(cipher_text), "\n")          # Print the cipher text
+print("Cipher Text: ", cipher_text, "\n\nBinary Bits: ", b2i(cipher_text), "\n", len(b2i(cipher_text)))          # Print the cipher text
 print("Converted Plain text: ", plain)                      # print the decrypted text from cypher text
+
+# Open a file to write
+# with open("RC4_algorithm.txt", "w") as file, open("RC4_keys.txt", "w") as key_file:
+#     for _ in range(100):
+#         key = urandom(24)
+#         drbg_1 = RC4(key)
+#         cipher_text = drbg_1.en_de_crypt(plain_text)
+#         file.write(b2i(cipher_text) + '\n')
+#         key_file.write(key.hex() + '\n')
+#
+# print("Files are ready!")

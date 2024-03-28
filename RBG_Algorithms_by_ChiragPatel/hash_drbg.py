@@ -160,13 +160,13 @@ class Hash_DRBG:
 # =============== being generated inside the function so the user does not need to add it manually =====================
 
 drbg = Hash_DRBG(security_strength)
-# random_seq = drbg.generate(output_bytes)
-# print(b2i(random_seq), "\n", "Total number of Bits:", len(b2i(random_seq)))
+random_seq = drbg.generate(output_bytes)
+print(b2i(random_seq), "\n", "Total number of Bits:", len(b2i(random_seq)))
 
 # Open a file to write
-with open("hash_drbg.txt", "w") as file:
-    for _ in range(100):
-        random_seq = drbg.generate(output_bytes)
-        file.write(b2i(random_seq) + '\n')
-
-print("Random bits have been stored in random_bits.txt")
+# with open("hash_drbg.txt", "w") as file:
+#     for _ in range(100):
+#         random_seq = drbg.generate(output_bytes)
+#         file.write(b2i(random_seq) + '\n')
+#
+# print("Files is ready!")

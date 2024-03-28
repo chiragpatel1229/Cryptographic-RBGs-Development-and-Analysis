@@ -267,9 +267,9 @@ random_bytes = drbg.generate(output_bytes)      # Call the generate method with 
 print(b2i(random_bytes))                        # Print the random binary sequence in hexadecimal format
 
 # Open a file to write
-with open("AES_DRBG.txt", "w") as file:
-    for _ in range(100):
-        random_bytes = drbg.generate(output_bytes)
-        file.write(b2i(random_bytes) + '\n')
-
-print("Random bits have been stored in random_bits.txt")
+# with open("AES_DRBG.txt", "w") as file:
+#     for _ in range(100):
+#         random_bytes = drbg.generate(output_bytes)
+#         file.write(b2i(random_bytes) + '\n')
+#
+# print("Files is ready!")
