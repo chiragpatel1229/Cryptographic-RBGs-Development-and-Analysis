@@ -1,6 +1,8 @@
 import math
 import numpy
 import scipy.special as spc
+import matplotlib.pyplot as plt
+import os
 
 """
 2.2.7 Input Size Recommendation
@@ -95,25 +97,66 @@ def longest_runs(bin_data: str):
 
 
 # Function to read sequences from a .txt file ==========================================================================
-def read_sequences(file_name):
-    with open(file_name, 'r') as file:                      # open the file in a read mode
-        sequences = []                                      # set a buffer to store the sequences
+def read_sequences(file_name_):
+    with open(file_name_, 'r') as file:                      # open the file in a read mode
+        _sequences = []                                      # set a buffer to store the sequences
         for line in file:
-            stripped_line = line.strip()                    # extract each sequence as a separate line
-            mapped_line = list(map(int, stripped_line))     # convert each line to the list of integers
-            sequences.append(mapped_line)                   # append each sequence as a list to the buffer
-    return sequences                                        # return the list of sequences
+            # stripped_line = line.strip()                     # extract each sequence as a separate line
+            # mapped_line = list(map(int, stripped_line))      # convert each line to the list of integers
+            mapped_line = line.strip()
+            _sequences.append(mapped_line)                   # append each sequence as a list to the buffer
+    return _sequences                                        # return the list of sequences
 
 
-file_name1 = '../data/Ideal_seq.txt'
+# Function to calculate Burstiness of each sequence =======================================================
+def Longest_of_all_sequences(seq_):
+    all_bursty_data = []                                          # set a buffer to store the normalised gaps
+    for sequence in seq_:
+        L_ = longest_runs(sequence)                               # find the gaps from each sequence
+        all_bursty_data.append(L_)   # set them with a descending order to ease the further part
+    return all_bursty_data
+
+
+# Function to plot the normalized gap length of 0 and 1 for all sequences ==============================================
+def plot_longest(norm_gaps_zero, f_name=None):
+    avg_norm_gap_zero = sum(norm_gaps_zero) / len(norm_gaps_zero)
+    plt.figure()
+    plt.plot(norm_gaps_zero, label=f'Data\nAvg. = {avg_norm_gap_zero:.3f}')
+    plt.axhline(y=0.1, color='r', linestyle='-', linewidth=1)  # Horizontal line at y = 0.5
+    plt.axhline(y=avg_norm_gap_zero, color='g', linestyle='-', linewidth=1)  # Horizontal line at average value
+    # plt.text(0, avg_norm_gap_zero, f'Avg: {avg_norm_gap_zero* 1e1}', color='b', va='bottom')  # Add average value label
+    plt.title(f"Longest run estimation for {f_name}")
+    plt.xlabel("Sequence Number")
+    plt.ylabel("P-value")
+    plt.legend()
+
+
+# seq = '11111101000110010011111000000010000011111110111101111111100000000000111100001000111111010101000101110011010000010001011011011011111010001101110110101101011111110111110100010001011000111111110000001001011100100111001011111010101101010110101000010111010011001101011110100100101011111000100010101010101010101111001001110001110010001100100111011110110010111111000001110001011011100100000101100000111010100111001111100101110101001111000101001001011011110101011111101110101000000110011001001001000101010000011011110010'
+# # # seq = (1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0)
+# a = longest_runs(seq)
+# print("Probability value: ", a)
+# plot_longest(a)
 
 
 
+# Use the functions ====================================================================================================
+file_names = ['../RBG_data_files/AES_DRBG.txt', '../RBG_data_files/BBS_blum_blum_shub.txt',
+              '../RBG_data_files/ChaCha20.txt', '../RBG_data_files/CTR_DRBG.txt',
+              '../RBG_data_files/hash_drbg.txt', '../RBG_data_files/QRNG.txt',
+              '../RBG_data_files/hmac_drbg.txt', '../RBG_data_files/M_sequences.txt',
+              '../RBG_data_files/RC4_algorithm.txt', '../RBG_data_files/RSA_algorithm.txt',
+              '../RBG_data_files/Synthetic_RBG.txt', '../RBG_data_files/Q_bit-flip_noice_Model.txt',
+              '../RBG_data_files/Ideal Q-simulator.txt', '../RBG_data_files/Q_thermal_noice_Model.txt']
 
+for file_name in file_names[:]:
+    # get the file names
+    b_n = os.path.basename(file_name)           # Extract only the file name
+    base_name = os.path.splitext(b_n)[0]        # Remove file extension
 
-seq = '11111101000110010011111000000010000011111110111101111111100000000000111100001000111111010101000101110011010000010001011011011011111010001101110110101101011111110111110100010001011000111111110000001001011100100111001011111010101101010110101000010111010011001101011110100100101011111000100010101010101010101111001001110001110010001100100111011110110010111111000001110001011011100100000101100000111010100111001111100101110101001111000101001001011011110101011111101110101000000110011001001001000101010000011011110010'
-#
-#
-# # seq = (1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0)
-#
-print("Probability value: ", longest_runs(seq))
+    sequences = read_sequences(file_name)       # collect All the sequences
+    burst = Longest_of_all_sequences(sequences)     # all normalised gaps
+
+    plot_longest(burst, base_name)
+    plt.savefig(f"Longest_{base_name}")
+
+plt.show()

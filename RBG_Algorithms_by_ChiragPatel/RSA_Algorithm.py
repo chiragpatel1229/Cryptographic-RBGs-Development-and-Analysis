@@ -1,6 +1,7 @@
 import random
 from sympy import nextprime
 import secrets
+import string
 '''
 -> The RSA (Rivest–Shamir–Adleman) is an Asymmetric cryptography algorithm and a public-key crypto-system. 
 1. A client (for example browser) sends its public key to the server and requests some data.
@@ -24,6 +25,14 @@ rnd_q = 170
 # message = "Hello, World! This is a random message for testing purpose only!1111"
 message = "52DUb0izihzpIyehX8aKDpAuM2eT07WpYhcXxZrY40WcvYGpkLbSMJ58ffgadfgsdfgsfgcLWSdwHwWwDaKO7G0z9EwpeqfnVvbyOQ7jcuUQlSdYQm0estX4mMlHa3j3SHRgxsksZKZI7DC1KANyPle4KJujbNthh0tVYEqYFb0mppHvEvTamE8guLmFNmhxuZTeQIywsVJVCAeSdgKvX2YH8a7Cp8HP4t6YvktZzd7E6hsFkB3cuDJTiHN82RbaXfdh6exsdf"
 
+def rnd_msg(length):
+    # https://www.geeksforgeeks.org/python-generate-random-string-of-given-length/
+
+    # chars = string.ascii_letters + string.digits + string.punctuation       # Random message Char. selection Opts.
+    chars = string.ascii_letters + string.digits                              # Random message Char. selection Opts.
+    rd_msg = "".join(random.choice(chars) for _ in range(length)).encode()    # Generating random strings
+    # .encode() is for converting the 'string' message into the 'bytes'
+    return rd_msg
 
 # 1.0 =========== Function to find the common divisor ==================================================================
 def gcd(a_value, b_value):              # Euclidean Algorithm to calculate the greatest common divisor of two numbers
@@ -128,35 +137,36 @@ def decrypt(private_key, ciphertext):
 
 
 # 7.0 =========== Algorithm execution and calling functions ============================================================
-# Generate public and private keys using two prime numbers
-public, private = generate_keypair(rnd_p, rnd_q)
-
-# Public and private keys
-print("Public Key: ", public)
-print("\nPrivate Key: ", private)
-
-# Encrypt a message
-encrypted_msg = encrypt(public, message)
-cipher_text = ''.join([format(i, '08b') for i in encrypted_msg])
-print("\n\nEncrypted Message: ", len(cipher_text))
-
-# Decrypt the message
-decrypted_msg = decrypt(private, encrypted_msg)
-print("\n\nDecrypted Message: ", decrypted_msg)
+# # Generate public and private keys using two prime numbers
+# public, private = generate_keypair(rnd_p, rnd_q)
+#
+# # Public and private keys
+# print("Public Key: ", public)
+# print("\nPrivate Key: ", private)
+#
+# # Encrypt a message
+# encrypted_msg = encrypt(public, message)
+# cipher_text = ''.join([format(i, '08b') for i in encrypted_msg])
+# print("\n\nEncrypted Message: ", len(cipher_text))
+#
+# # Decrypt the message
+# decrypted_msg = decrypt(private, encrypted_msg)
+# print("\n\nDecrypted Message: ", decrypted_msg)
 
 # 8.0 =========== end ==================================================================================================
-# sec_ = secrets.SystemRandom()
-# # Open a file to write
-# with open("RSA_algorithm.txt", "w") as file, open("RSA_keys.txt", "w") as key_file:
-#     for _ in range(100):
-#         rnd_p = sec_.randrange(100 , 1000)
-#         rnd_q = sec_.randrange(100 , 1000)
-#         public, private = generate_keypair(rnd_p, rnd_q)
-#         encrypted_msg = encrypt(public, message)
-#         cipher_text = ''.join([format(i, '08b') for i in encrypted_msg])
-#
-#         file.write(cipher_text[:4000] + '\n')
-#         key_file.write(str(public) + str(private) + '\n')  # Store the drbg_1 output
-#
-# print("Files are ready!")
+sec_ = secrets.SystemRandom()
+# Open a file to write
+with open("../RBG_data_files/RSA_algorithm.txt", "w") as file, open("../RBG_data_files/RSA_keys.txt", "w") as key_file:
+    for _ in range(100):
+        rnd_p = sec_.randrange(100 , 1000)
+        rnd_q = sec_.randrange(100 , 1000)
+        public, private = generate_keypair(rnd_p, rnd_q)
+        message = rnd_msg(500)
+        encrypted_msg = encrypt(public, str(message))
+        cipher_text = ''.join([format(i, '08b') for i in encrypted_msg])
+
+        file.write(cipher_text[:4000] + '\n')
+        key_file.write(str(public) + str(private) + '\n')  # Store the drbg_1 output
+
+print("Files are ready!")
 

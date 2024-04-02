@@ -9,7 +9,7 @@ Check this link: https://github.com/Qiskit/qiskit-ibm-provider
 """""
 
 
-from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit, execute, IBMQ
+from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit, execute
 from qiskit.tools.monitor import job_monitor
 from qiskit_ibm_provider import IBMProvider
 
@@ -57,13 +57,14 @@ circuit.h(q)
 circuit.measure(q, c)
 
 # Initialize all buffers
-buffers = ['']*20
+buffers = ['']*100
 
-for i in range(5):
-    job = execute(circuit, backend, shots=30)
+for i in range(40):
+    job = execute(circuit, backend, shots=101)              # the shots will decide the number of sequences
     print(f'Executing Job...\n {job_monitor(job)}\n')
     result = job.result()
     counts = result.get_counts()
+    print(i)
     keys = list(counts.keys())
     for j in range(len(buffers)):
         if j < len(keys):
@@ -72,7 +73,11 @@ for i in range(5):
 # Print all the buffers
 for i, buffer in enumerate(buffers):
     print(f'seq_{i+1} ', buffer, '\n')
+    # print(f'{i+1}', len(buffer), '\n')
 
-# Print the lengths of the buffers
-for i, buffer in enumerate(buffers):
-    print(f'{i+1}', len(buffer), '\n')
+# Save all the buffers to a text file
+with open('QRNG.txt', 'w') as f:
+    for i, buffer in enumerate(buffers):
+        f.write(buffer + '\n')
+
+        111111111000000000110100101101000100111000001100100101100100110000101100

@@ -1,17 +1,9 @@
-import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit_aer import AerSimulator
 
 # Import from Qiskit Aer noise module
-from qiskit_aer.noise import (
-    NoiseModel,
-    QuantumError,
-    ReadoutError,
-    depolarizing_error,
-    pauli_error,
-    thermal_relaxation_error,
-)
+from qiskit_aer.noise import (NoiseModel, pauli_error)
 # ======================================================================================================================
 from qiskit_ibm_runtime import QiskitRuntimeService
 
@@ -75,7 +67,7 @@ print(noise_bit_flip)
 # ======================================================================================================================
 
 # Create noisy simulator backend
-sim_noise = AerSimulator(noise_model=noise_bit_flip)
+sim_noise = AerSimulator()
 
 # Transpile circuit for noisy basis gates
 passmanager = generate_preset_pass_manager(optimization_level=3, backend=sim_noise)
@@ -85,11 +77,11 @@ circ_b_noise = passmanager.run(circ)
 binary_sequence = ''
 
 # Number of times to run the circuit to get 512 bits
-num_runs = 512 // n_qubits
+num_runs = 64 // n_qubits
 
 for _ in range(num_runs):
     # Run and get counts
-    result_bit_flip = sim_noise.run(circ_b_noise).result()
+    result_bit_flip = sim_noise.run(circ_b_noise, noise_model=noise_bit_flip, shots=3).result()
     counts_bit_flip = result_bit_flip.get_counts(0)
 
     # Get the most frequent bitstring
@@ -98,6 +90,8 @@ for _ in range(num_runs):
 
 print('RESULT: ', binary_sequence, '\n')
 print(len(binary_sequence))
+
+
 
 
 # ======================================================================================================================

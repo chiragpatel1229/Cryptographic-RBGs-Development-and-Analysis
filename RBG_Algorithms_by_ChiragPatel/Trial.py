@@ -6,7 +6,7 @@ from qiskit_aer import AerSimulator
 # Import from Qiskit Aer noise module
 from qiskit_aer.noise import (NoiseModel, thermal_relaxation_error)
 # ======================================================================================================================
-from qiskit_ibm_runtime import QiskitRuntimeService
+# from qiskit_ibm_runtime import QiskitRuntimeService
 
 # Ref: https://docs.quantum.ibm.com/verify/building_noise_models#noise-model-examples
 """To test this algorithm Please use the jupiter notebook on IMB portal -> https://lab.quantum.ibm.com 
@@ -17,9 +17,9 @@ If the number of active circuit qubits is greater than this value batching of si
 Now to design a circuit for aer simulator the maximum bit size is fixed to max 16 qubits for accuracy and precision purpose in the new update.
 """
 
-service = QiskitRuntimeService()
-backend = service.backend("ibm_brisbane")
-noise_model = NoiseModel.from_backend(backend)
+# service = QiskitRuntimeService()
+# backend = service.backend("ibm_brisbane")
+# noise_model = NoiseModel.from_backend(backend)
 
 # ======================================================================================================================
 # System Specification
@@ -76,43 +76,31 @@ for j in range(n_qubits):
 
 print(noise_thermal)
 
-# ======================================================================================================================
+# =========================================================================================
+# Create noisy simulator backend
+sim_noise = AerSimulator()
 
-import time
+# Initialize all buffers for all the sequences
+create_seq = [''] * 100
 
-# Start time measurement
-start_time = time.time()
+for i in range(43):   # range will multiply with the No. qubits and creates a length of sequence
+    passmanager = generate_preset_pass_manager(optimization_level=3, backend=sim_noise)
+    circ_thermal = passmanager.run(circ)
+    # shots will decide the number of sequences as the keys dictionaries are based on it
+    result_thermal = sim_noise.run(circ_thermal, noise_model=noise_thermal, shots=101).result()
+    counts_thermal = result_thermal.get_counts()
+    print(i)
+    keys = list(counts_thermal.keys())
+    for j in range(len(create_seq)):
+        if j < len(keys):
+            create_seq[j] += keys[j]
 
-# Run the noisy simulation
-sim_thermal = AerSimulator()
+# Print all the buffers
+# for i, buffer in enumerate(buffers):
+#     print(f'seq_{i+1} ', buffer, '\n')
+#     print(f'{i+1}', len(buffer), '\n')
 
-# Transpile circuit for noisy basis gates
-passmanager = generate_preset_pass_manager(optimization_level=3, backend=sim_thermal)
-circ_thermal = passmanager.run(circ)
-
-# Initialize an empty string to store the binary sequence
-binary_sequence = ''
-
-# Number of times to run the circuit to get 512 bits
-num_runs = 64 // n_qubits
-
-for _ in range(num_runs):
-    # Run and get counts
-    result_thermal = sim_thermal.run(circ_thermal, noise_model=noise_thermal, shots=1).result()
-    counts_thermal = result_thermal.get_counts(0)
-
-    # Get the most frequent bitstring
-    most_frequent_bitstring = max(counts_thermal, key=counts_thermal.get)
-    binary_sequence += most_frequent_bitstring
-
-# End time measurement
-end_time = time.time()
-
-# Calculate execution time
-execution_time = end_time - start_time
-
-print('RESULT: ', binary_sequence, '\n')
-print('Length of binary sequence:', len(binary_sequence))
-print('Execution time:', execution_time, 'seconds')
-
-# ======================================================================================================================
+# Save all the buffers to a text file
+with open('QRNG.txt', 'w') as f:
+    for i, buffer in enumerate(create_seq):
+        f.write(buffer + '\n')

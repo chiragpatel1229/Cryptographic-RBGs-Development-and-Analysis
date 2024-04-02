@@ -1,3 +1,5 @@
+import matplotlib.pyplot as plt
+import os
 
 class Runs_tests:
     def __init__(self, data):
@@ -50,7 +52,7 @@ class Runs_tests:
     # Requires data from alt_sequence2
 
     def num_directional_runs(self, alt_seq):
-        # print(alt_seq)
+        print(alt_seq)
         num_runs = 0
         if len(alt_seq) > 0:
             num_runs += 1
@@ -109,16 +111,15 @@ class Runs_tests:
         print("Length of Runs Based on the Median: ", self.len_directional_runs(alt_seq2))
 
 
+# Use the functions ====================================================================================================
 s = '100010111101000'
-
-rnd_seq = [int(bit) for bit in s]
-
-
-rnd_zeros = rnd_seq.count(0)
-rnd_ones = rnd_seq.count(1)
-print(f"Random Sequence Balance: 0s= {rnd_zeros}, 1s= {rnd_ones}\n\n")
-
-print('length of the sequence:', len(s), '\n')
-a  = [5, 15, 12, 1, 13, 9, 4]
+# rnd_seq = [int(bit) for bit in s]
+# rnd_zeros = rnd_seq.count(0)
+# rnd_ones = rnd_seq.count(1)
+# print(f"Random Sequence Balance: 0s= {rnd_zeros}, 1s= {rnd_ones}\n\n")
+#
+# print('length of the sequence:', len(s), '\n')
+# a  = [5, 15, 12, 1, 13, 9, 4]
 nist = Runs_tests(s)
 nist.print_outputs()
+
