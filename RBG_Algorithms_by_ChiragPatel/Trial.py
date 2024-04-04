@@ -1,106 +1,173 @@
-import numpy as np
-from qiskit import QuantumCircuit
-from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-from qiskit_aer import AerSimulator
+# import hashlib
+# import hmac
+import os
+import secrets
+from cryptography.hazmat.primitives import hashes, hmac
+from cryptography.hazmat.backends import default_backend
 
-# Import from Qiskit Aer noise module
-from qiskit_aer.noise import (NoiseModel, thermal_relaxation_error)
-# ======================================================================================================================
-# from qiskit_ibm_runtime import QiskitRuntimeService
-
-# Ref: https://docs.quantum.ibm.com/verify/building_noise_models#noise-model-examples
-"""To test this algorithm Please use the jupiter notebook on IMB portal -> https://lab.quantum.ibm.com 
-
-https://qiskit.github.io/qiskit-aer/stubs/qiskit_aer.AerSimulator.html
-UPDATE: batched_shots_gpu_max_qubits (int): This option sets the maximum number of qubits for enabling the batched_shots_gpu option. 
-If the number of active circuit qubits is greater than this value batching of simulation shots will not be used. (Default: 16).
-Now to design a circuit for aer simulator the maximum bit size is fixed to max 16 qubits for accuracy and precision purpose in the new update.
+"""
+The security strength is the entropy that is required to initiate and reseed the DRBG. For HASH and HMAC the output
+length is equal to the security strength per request, if more bits then the loop has to iterate further until the 
+reseed counter limit is reached then the DRBG has to be reseeded again.
 """
 
-# service = QiskitRuntimeService()
-# backend = service.backend("ibm_brisbane")
-# noise_model = NoiseModel.from_backend(backend)
+# References: The HMAC-DRBG mechanism based on NIST SP800-90A Publication
+# Please consider all the Input parameters in bytes...
 
-# ======================================================================================================================
-# System Specification
-n_qubits = 24
-circ = QuantumCircuit(n_qubits)
+# This file generates only one sequence per execution the reseed is not required, while generating more than one sequences and the
+# reseed counter reach the max interval leval the drbg need to be reseeded using the reseed function with new entropy and data
+# Comments and the variable names are also referenced from the given NIST document
 
-# Applying Hadamard gate to all qubits
-for qubit in range(n_qubits):
-    circ.h(qubit)
 
-# Measure all qubits
-circ.measure_all()
-# print(circ)
+# 0.0 =========== User Inputs ==========================================================================================
 
-# ======================================================================================================================
-'''Noise model 2'''
-# thermal relaxation method T1 and T2 values for qubits 0-3
+security_strength = 112                              # The strength should be = (112, 128, 192, 256)
 
-# Generate T1 and T2 values for all qubits
-T1s = np.random.normal(50e3, 10e3, n_qubits)  # Sampled from normal distribution mean 50 microseconds
-T2s = np.random.normal(70e3, 10e3, n_qubits)  # Sampled from normal distribution mean 70 microseconds
+output_bytes = 4000 // 8                             # input will be in bytes, it should be less than 7500
 
-# Ensure T2s are not greater than 2*T1s
-T2s = np.array([min(T2s[j], 2 * T1s[j]) for j in range(n_qubits)])
+# 1.0 =========== Convert The Data Types to Store ======================================================================
 
-# Define gate times
-time_u1 = 0  # virtual gate
-time_u2 = 50  # single X90 pulse
-time_u3 = 100  # two X90 pulses
-time_cx = 300
-time_reset = 1000  # 1 microsecond
-time_measure = 1000  # 1 microsecond
 
-# Create thermal relaxation errors for each type of gate apply it to each qubit
-errors_reset = [thermal_relaxation_error(T1s[j], T2s[j], time_reset) for j in range(n_qubits)]
-errors_measure = [thermal_relaxation_error(T1s[j], T2s[j], time_measure) for j in range(n_qubits)]
-errors_u1 = [thermal_relaxation_error(T1s[j], T2s[j], time_u1) for j in range(n_qubits)]
-errors_u2 = [thermal_relaxation_error(T1s[j], T2s[j], time_u2) for j in range(n_qubits)]
-errors_u3 = [thermal_relaxation_error(T1s[j], T2s[j], time_u3) for j in range(n_qubits)]
-errors_cx = [[thermal_relaxation_error(T1s[j], T2s[j], time_cx).expand(
-    thermal_relaxation_error(T1s[k], T2s[k], time_cx))
-    for k in range(n_qubits)] for j in range(n_qubits)]
+def b2i(data):                                              # convert bytes to a list of integers
+    binary_string = ''                                      # Convert each byte to a binary string and join them
+    for byte in data:
+        binary_string += bin(byte)[2:].zfill(8)             # convert each byte to binary of 8 characters and append
+    # integer_list = [int(bit) for bit in binary_string]      # Convert the binary string to a list of integers
+    return binary_string
 
-# Add errors to the noise model
-noise_thermal = NoiseModel()
-for j in range(n_qubits):
-    noise_thermal.add_quantum_error(errors_reset[j], 'reset', [j])
-    noise_thermal.add_quantum_error(errors_measure[j], 'measure', [j])
-    noise_thermal.add_quantum_error(errors_u1[j], 'u1', [j])
-    noise_thermal.add_quantum_error(errors_u2[j], 'u2', [j])
-    noise_thermal.add_quantum_error(errors_u3[j], 'u3', [j])
-    for k in range(n_qubits):
-        noise_thermal.add_quantum_error(errors_cx[j][k], 'cx', [j, k])
 
-print(noise_thermal)
+# 2.0 =========== The HMAC DRBG class ==================================================================================
 
-# =========================================================================================
-# Create noisy simulator backend
-sim_noise = AerSimulator()
+class HMAC_DRBG:
 
-# Initialize all buffers for all the sequences
-create_seq = [''] * 100
+    # 2.1 ==============================================================================================================
 
-for i in range(43):   # range will multiply with the No. qubits and creates a length of sequence
-    passmanager = generate_preset_pass_manager(optimization_level=3, backend=sim_noise)
-    circ_thermal = passmanager.run(circ)
-    # shots will decide the number of sequences as the keys dictionaries are based on it
-    result_thermal = sim_noise.run(circ_thermal, noise_model=noise_thermal, shots=101).result()
-    counts_thermal = result_thermal.get_counts()
-    print(i)
-    keys = list(counts_thermal.keys())
-    for j in range(len(create_seq)):
-        if j < len(keys):
-            create_seq[j] += keys[j]
+    def __init__(self, requested_security_strength: int = 256):
 
-# Print all the buffers
-# for i, buffer in enumerate(buffers):
-#     print(f'seq_{i+1} ', buffer, '\n')
-#     print(f'{i+1}', len(buffer), '\n')
+        # Internal state variables  ====================================================================================
+        self.K = None
+        self.V = None
+        self.reseed_counter = None
 
-# Save all the buffers to a text file
-with open('QRNG.txt', 'w') as f:
-    for i, buffer in enumerate(create_seq):
-        f.write(buffer + '\n')
+        # Check requested security strength ============================================================================
+        if requested_security_strength > 256:
+            raise RuntimeError("requested_security_strength cannot exceed 256 bits.")
+
+        # consider the security strength based on requested value check Table 1 on Page - 14 ===========================
+        if requested_security_strength <= 112:
+            self.security_strength = 112
+        elif requested_security_strength <= 128:
+            self.security_strength = 128
+        elif requested_security_strength <= 192:
+            self.security_strength = 192
+        else:
+            self.security_strength = 256
+
+        # Internal state variables  ====================================================================================
+
+        entropy = os.urandom(self.security_strength // 8 * 2)           # (security strength * 1.5) < init_entropy < (125 bytes)
+        personalization_string = secrets.token_bytes(30)                # (security_strength bits) < nonce < (256 bits / 32 bytes)
+
+        # Modified from Section 10.1.1, which specified 440 bits here ==================================================
+        if len(personalization_string) * 8 > 256:
+            raise RuntimeError("personalization_string cannot exceed 256 bits.")
+
+        # Check the length of the entropy input ========================================================================
+        if (len(entropy) * 8 * 2) < (3 * self.security_strength):       # The length should be at least equal to the security strength
+            raise RuntimeError(f"entropy must be at least {self.security_strength * 3} bits.")
+
+        if len(entropy) * 8 > 1000:                                     # The length should not exceed 1000 bits
+            raise RuntimeError("entropy cannot exceed 1000 bits.")
+
+        self.instantiate(entropy, personalization_string)  # Initialize the internal state
+
+    # 2.2 ==============================================================================================================
+
+    @staticmethod
+    def hmac(key: bytes, data: bytes) -> bytes:
+        h = hmac.HMAC(key, hashes.SHA256(), backend=default_backend())
+        h.update(data)
+        return h.finalize()
+
+    # 2.3 ==============================================================================================================
+
+    def update(self, provided_data: bytes = None):     # Update the key and internal values using HMAC-SHA256
+        self.K = self.hmac(self.K, self.V + b"\x00" + (b"" if provided_data is None else provided_data))
+        self.V = self.hmac(self.K, self.V)
+
+        if provided_data is not None:                  # Additional update steps if provided_data is not None
+            self.K = self.hmac(self.K, self.V + b"\x01" + provided_data)
+            self.V = self.hmac(self.K, self.V)
+
+    # 2.3 ==============================================================================================================
+
+    def instantiate(self, entropy: bytes, personalization_string: bytes):
+        seed_material = entropy + personalization_string    # prepare the seed material for the update function
+
+        # Initialize key and internal values ===========================================================================
+        self.K = b"\x00" * 32
+        self.V = b"\x01" * 32
+
+        # Initial update of the internal state =========================================================================
+        self.update(seed_material)
+        self.reseed_counter = 1
+
+    # 2.4 ==============================================================================================================
+
+    def reseed(self):       # Reseed the generator with additional entropy
+
+        entropy = os.urandom(self.security_strength // 8 + 3)      # (security strength * 1.5) < init_entropy < (125 bytes)
+
+        # Check entropy length as per the requirements =================================================================
+        if (len(entropy) * 8) < self.security_strength:
+            raise RuntimeError(f"entropy must be at least {self.security_strength} bits.")
+
+        if len(entropy) * 8 > 1000:
+            raise RuntimeError("entropy cannot exceed 1000 bits.")
+
+        # Update the internal state with additional entropy ============================================================
+        self.update(entropy)
+        self.reseed_counter = 1
+
+    # 2.5 ==============================================================================================================
+
+    def generate(self, num_bytes: int, requested_security_strength: int = 256):
+
+        # Check limits of on the number of requested bits ==============================================================
+        if (num_bytes * 8) > pow(2, 12):
+            raise RuntimeError("It is not possible to generate more than 7500 bits in a single call.")
+
+        # Check requested security strength  ===========================================================================
+        if requested_security_strength > self.security_strength:
+            raise RuntimeError(f"requested_security_strength exceeds this instance's security_strength ({self.security_strength})")
+
+        if self.reseed_counter >= 10000:        # Check reseed counter
+            return None
+
+        temp = b""
+
+        while len(temp) < num_bytes:
+            self.V = self.hmac(self.K, self.V)  # update internal value with every iteration and generate random bytes
+            temp += self.V
+
+        self.update()
+        self.reseed_counter += 1                # Final update and increment reseed counter
+
+        return temp[:num_bytes]                 # Return only requested bytes
+
+
+# 3.0 =========== Call the class and its functions, required input data is =============================================
+# =============== being generated inside the function so the user does not need to add it manually =====================
+drbg = HMAC_DRBG(requested_security_strength=security_strength)
+drbg.reseed()
+# random_seq = drbg.generate(num_bytes=output_bytes, requested_security_strength=security_strength)
+# print(b2i(random_seq), "\n", "Total number of Bits:", len(b2i(random_seq)))
+
+# Open a file to write
+with open("hmac_drbg.txt", "w") as file:
+    for _ in range(100):
+        random_seq = drbg.generate(num_bytes=output_bytes, requested_security_strength=security_strength)
+        file.write(b2i(random_seq) + '\n')
+
+print("Files is ready!")
+

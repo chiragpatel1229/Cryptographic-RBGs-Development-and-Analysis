@@ -175,8 +175,8 @@ def plot_mako(norm_gaps_zero, f_name=None, __min=None):
     avg_norm_gap_zero = sum(norm_gaps_zero) / len(norm_gaps_zero)
     plt.figure()
     plt.grid(True)
-    plt.plot(norm_gaps_zero, label=f'Data\nAvg. = {avg_norm_gap_zero:.3f}')
-    plt.axhline(y=__min, color='r', linestyle='-', linewidth=1)  # Horizontal line at y = 0.5
+    plt.plot(norm_gaps_zero, label=f'Data')
+    plt.axhline(y=__min, color='r', linestyle='-', linewidth=1, label=f'Avg. = {__min:.5f}')  # Horizontal line at y = 0.5
     plt.axhline(y=avg_norm_gap_zero, color='g', linestyle='-', linewidth=1, label=f'Avg. = {avg_norm_gap_zero:.5f}')  # Horizontal line at average value
     # plt.text(0, avg_norm_gap_zero, f'Avg: {avg_norm_gap_zero:.2f}', color='b', va='bottom')  # Add average value label
     # plt.title(f"Markov - min-entropy estimation for {f_name}")
@@ -208,4 +208,4 @@ for file_name in file_names[11:14]:
     plot_mako(mako_min, base_name, av_mim)
     plt.savefig(f"Markov_{base_name}.png")
 
-# plt.show()
+plt.show()

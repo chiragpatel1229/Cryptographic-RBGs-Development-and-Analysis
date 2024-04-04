@@ -1,7 +1,9 @@
-import hashlib
-import hmac
+# import hashlib
+# import hmac
 import os
 import secrets
+from cryptography.hazmat.primitives import hashes, hmac
+from cryptography.hazmat.backends import default_backend
 
 """
 The security strength is the entropy that is required to initiate and reseed the DRBG. For HASH and HMAC the output
@@ -19,7 +21,7 @@ reseed counter limit is reached then the DRBG has to be reseeded again.
 
 # 0.0 =========== User Inputs ==========================================================================================
 
-security_strength = 112                              # The strength should be = (112, 128, 192, 256)
+security_strength = 256                              # The strength should be = (112, 128, 192, 256)
 
 output_bytes = 4000 // 8                             # input will be in bytes, it should be less than 7500
 
@@ -81,9 +83,11 @@ class HMAC_DRBG:
 
     # 2.2 ==============================================================================================================
 
-    @staticmethod                 # to Generate a 'message authentication code' (MAC) for the input and secret key
+    @staticmethod
     def hmac(key: bytes, data: bytes) -> bytes:
-        return hmac.new(key, data, hashlib.sha256).digest()
+        h = hmac.HMAC(key, hashes.SHA256(), backend=default_backend())
+        h.update(data)
+        return h.finalize()
 
     # 2.3 ==============================================================================================================
 
@@ -156,14 +160,14 @@ class HMAC_DRBG:
 # =============== being generated inside the function so the user does not need to add it manually =====================
 drbg = HMAC_DRBG(requested_security_strength=security_strength)
 drbg.reseed()
-random_seq = drbg.generate(num_bytes=output_bytes, requested_security_strength=security_strength)
-print(b2i(random_seq), "\n", "Total number of Bits:", len(b2i(random_seq)))
+# random_seq = drbg.generate(num_bytes=output_bytes, requested_security_strength=security_strength)
+# print(b2i(random_seq), "\n", "Total number of Bits:", len(b2i(random_seq)))
 
 # Open a file to write
-# with open("hmac_drbg.txt", "w") as file:
-#     for _ in range(100):
-#         random_seq = drbg.generate(num_bytes=output_bytes, requested_security_strength=security_strength)
-#         file.write(b2i(random_seq) + '\n')
-#
-# print("Files is ready!")
+with open("hmac_drbg.txt", "w") as file:
+    for _ in range(100):
+        random_seq = drbg.generate(num_bytes=output_bytes, requested_security_strength=security_strength)
+        file.write(b2i(random_seq) + '\n')
+
+print("Files is ready!")
 

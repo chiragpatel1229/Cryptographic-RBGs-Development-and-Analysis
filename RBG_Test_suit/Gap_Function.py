@@ -45,8 +45,8 @@ def plot_histogram(un_gaps, no_gaps, title=None):
     plt.figure()
     bars = plt.bar(un_gaps, no_gaps, width=0.15, align='center')
     # plt.title(title)
-    plt.xlabel("Gap Length")
-    plt.ylabel("V")
+    plt.xlabel("Gap structures (V)")
+    plt.ylabel("Gap length")
     plt.grid(True)
 
     for num in range(len(bars)):        # write the normalised value on top of the bars

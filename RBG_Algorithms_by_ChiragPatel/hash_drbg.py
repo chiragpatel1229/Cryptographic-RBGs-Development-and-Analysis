@@ -1,6 +1,7 @@
-import hashlib
 import os
 import secrets
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.backends import default_backend
 
 """
 The security strength is the entropy that is required to initiate and reseed the DRBG. For HASH and HMAC the output
@@ -85,9 +86,15 @@ class Hash_DRBG:
 
 # 2.1 ==================================================================================================================
 
-    @staticmethod                                           # Simple wrapper for SHA-256 hash function
-    def hash(data: bytes) -> bytes:                         # Updating and manipulating the internal state
-        return hashlib.sha256(data).digest()                # return Hash Digest as a bytes object
+    # @staticmethod                                           # Simple wrapper for SHA-256 hash function
+    # def hash(data: bytes) -> bytes:                         # Updating and manipulating the internal state
+    #     return hashlib.sha256(data).digest()                # return Hash Digest as a bytes object
+
+    @staticmethod
+    def hash(data: bytes) -> bytes:
+        digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
+        digest.update(data)
+        return digest.finalize()
 
 # 2.2 ==================================================================================================================
 
@@ -160,13 +167,13 @@ class Hash_DRBG:
 # =============== being generated inside the function so the user does not need to add it manually =====================
 
 drbg = Hash_DRBG(security_strength)
-random_seq = drbg.generate(output_bytes)
-print(b2i(random_seq), "\n", "Total number of Bits:", len(b2i(random_seq)))
+# random_seq = drbg.generate(output_bytes)
+# print(b2i(random_seq), "\n", "Total number of Bits:", len(b2i(random_seq)))
 
 # Open a file to write
-# with open("hash_drbg.txt", "w") as file:
-#     for _ in range(100):
-#         random_seq = drbg.generate(output_bytes)
-#         file.write(b2i(random_seq) + '\n')
-#
-# print("Files is ready!")
+with open("hash_drbg.txt", "w") as file:
+    for _ in range(100):
+        random_seq = drbg.generate(output_bytes)
+        file.write(b2i(random_seq) + '\n')
+
+print("Files is ready!")
