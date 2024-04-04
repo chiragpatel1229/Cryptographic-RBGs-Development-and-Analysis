@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import os
+import random
 
 class Runs_tests:
     def __init__(self, data):
@@ -81,6 +82,43 @@ class Runs_tests:
         else:
             return reverse_positive
 
+    def calculate_all_test_statistics(self):
+        num_directional_runs = self.num_directional_runs()
+        len_directional_runs = self.len_directional_runs()
+        num_increases_decreases = self.num_increases_decreases()
+
+        return num_directional_runs, len_directional_runs, num_increases_decreases
+
+
+# Fisher yates shuffle =================================================================================================
+def fisher_yates_shuffle(sequence):
+    for i in range(len(sequence) - 1, 0, -1):
+        j = random.randint(0, i)
+        sequence[i], sequence[j] = sequence[j], sequence[i]
+    return sequence
+
+
+# Permutation testing to find the statistics are iid or not ============================================================
+def permutation_test(S):
+    S = list(S)
+    runs_tests = Runs_tests(S)
+    Ti = runs_tests.calculate_all_test_statistics()
+    C = [0, 0, 0]
+
+    for _ in range(5000):
+        S = fisher_yates_shuffle(S)
+        runs_tests = Runs_tests(S)
+        T = runs_tests.calculate_all_test_statistics()
+
+        for i in range(3):
+            if T[i] > Ti[i]:
+                C[i] += 1
+            elif T[i] == Ti[i]:
+                C[i] += 1
+    for i in range(3):
+        if C[i] <= 5 or C[i] >= 9995:
+            return 0.0
+    return 1.0
 
 # Function to read sequences from a .txt file ==========================================================================
 def read_sequences(file_name_):
@@ -97,25 +135,21 @@ def read_sequences(file_name_):
 def Runs_of_all_sequences(seq_):
     all_runs = []                                          # set a buffer to store the normalised gaps
     for sequence in seq_:
-        test = Runs_tests(sequence)
-        # num_d_runs = test.num_directional_runs()
-        len_d_runs = test.len_directional_runs()
-        # num_inc_dec = test.num_increases_decreases()
-        all_runs.append(len_d_runs)   # set them with a descending order to ease the further part
+        statics = permutation_test(sequence)
+        all_runs.append(statics)                           # set them with a descending order to ease the further part
     return all_runs
 
 
 # Function to plot the normalized gap length of 0 and 1 for all sequences ==============================================
 def plot_burstiness(norm_gaps_zero, f_name=None):
-    avg_norm_gap_zero = sum(norm_gaps_zero) / len(norm_gaps_zero)
     plt.figure()
-    plt.plot(norm_gaps_zero, label=f'Data\nAvg. = {avg_norm_gap_zero:.2f}')
-    plt.axhline(y=avg_norm_gap_zero, color='g', linestyle='-', linewidth=1)  # Horizontal line at average value
-    plt.text(0, avg_norm_gap_zero, f'Avg: {avg_norm_gap_zero:.2f}', color='b', va='bottom')  # Add average value label
-    plt.title(f"Length of directional runs test for {f_name}")
+    plt.grid(True, which='both')  # Specify grid lines for both axes
+    plt.plot(norm_gaps_zero, marker='x', label=f'Data')
+    plt.axhline(y=1.0, color='r', linestyle='-', linewidth=1, label='Expected = 1')  # Horizontal line at y = 1
     plt.xlabel("Sequence Number")
-    plt.ylabel("length of runs")
-    plt.legend()
+    plt.ylabel("IID-assumption")
+    plt.legend(loc='best')
+    plt.ylim(0, 2)
 
 
 # Use the functions ====================================================================================================
@@ -127,16 +161,15 @@ file_names = ['../RBG_data_files/AES_DRBG.txt', '../RBG_data_files/BBS_blum_blum
               '../RBG_data_files/Synthetic_RBG.txt', '../RBG_data_files/Q_bit-flip_noice_Model.txt',
               '../RBG_data_files/Ideal Q-simulator.txt', '../RBG_data_files/Q_thermal_noice_Model.txt']
 
-for file_name in file_names[6:7]:
+for file_name in file_names[4:5]:
     # get the file names
     b_n = os.path.basename(file_name)           # Extract only the file name
     base_name = os.path.splitext(b_n)[0]        # Remove file extension
 
     sequences = read_sequences(file_name)       # collect All the sequences
-    # print(sequences)
     Runs = Runs_of_all_sequences(sequences)  # all normalised gaps
 
     plot_burstiness(Runs, base_name)
-    plt.savefig(f"Number d runs_{base_name}")
+    # plt.savefig(f"IID_Num_Runs_{base_name}")
 
 plt.show()

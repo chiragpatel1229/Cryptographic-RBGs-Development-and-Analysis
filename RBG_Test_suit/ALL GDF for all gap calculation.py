@@ -53,54 +53,62 @@ def read_sequences(file_name_):
 
 # Function to calculate norm_gaps and uniq_gaps of each sequence =======================================================
 def get_norm_gaps(seq_):
-    all_norm_gaps = []                                          # set a buffer to store the normalised gaps
+    len_gaps = []                                          # set a buffer to store the normalised gaps
     for sequence in seq_:
         gaps = cal_gaps(sequence)                               # find the gaps from each sequence
-        u_gaps, norm_gaps, count = cal_norm_gaps(gaps)          # collect only normalised gaps
-        all_norm_gaps.append(max(u_gaps))   # set them with a descending order to ease the further part
-    return all_norm_gaps
+        a, b, c = cal_norm_gaps(gaps)
+        len_gaps.append(b)   # set them with a descending order to ease the further part
+    return len_gaps
 
 
 # Function to get particular gap lengths from the list of sequences ====================================================
 def get_selected_gap(seq_list, gap_index_value):
-    sel_gaps = []
+    sel_gaps_in = []
+    sel_gaps_out = []
+
     for n in seq_list:
-        # Check for list is empty or not
-        if len(n) > 0:
-            sel_gaps.append(n[gap_index_value])
+        sel_gaps_in.append(n[gap_index_value])
+
+        if 0.45 < n[gap_index_value] < 0.55:
+            sel_gaps_out.append(0)
         else:
-            # If empty, append 0
-            sel_gaps.append(0)
-    return sel_gaps
+            sel_gaps_out.append(n[gap_index_value])
+
+    return sel_gaps_in, sel_gaps_out
 
 # Function to plot the normalized gap length of 0 and 1 for all sequences ==============================================
-def plot_GDF_zeros(norm_gaps_zero, f_name=None):
-    avg_norm_gap_zero = sum(norm_gaps_zero) / len(norm_gaps_zero)
+def plot_GDF_zeros(g_in, g_out, f_name=None):
+    avg_norm_gap_zero = sum(g_in) / len(g_in)
     plt.figure()
-    plt.plot(norm_gaps_zero, label=f'Data\nAvg. = {avg_norm_gap_zero:.2f}')
-    plt.axhline(y=avg_norm_gap_zero, color='g', linestyle='-', linewidth=1)  # Horizontal line at average value
-    plt.text(0, avg_norm_gap_zero, f'Avg: {avg_norm_gap_zero:.2f}', color='b', va='bottom')  # Add average value label
-    plt.title(f"Total gaps using GDF for {f_name}")
+    plt.grid(True)
+    plt.plot(g_in, label='data')
+    plt.plot(g_out, marker='x', linestyle='None')
+    plt.axhline(y=0.5, color='r', linestyle='-', linewidth=1, label='Expected = 0.50')  # Horizontal line at y = 0.5
+    plt.axhline(y=avg_norm_gap_zero, color='g', linestyle='-', linewidth=1,
+                label=f'Avg. = {avg_norm_gap_zero:.5f}')  # Horizontal line at average value
+    # plt.text(0, avg_norm_gap_zero, f'Avg: {avg_norm_gap_zero:.2f}', color='b', va='bottom')  # Add average value label
+    # plt.title(f"Normalized length of 0 gap{f_name}")
     plt.xlabel("Sequence Number")
-    plt.ylabel("total gaps")
-    plt.legend()
+    plt.ylabel("V(0)")
+    plt.legend(loc='best')
+    plt.ylim(0.3, 0.7)
 
 
-def plot_GDF_ones(norm_gaps_one, file_n=None):
-    avg_norm_gap_one = sum(norm_gaps_one) / len(norm_gaps_one)
-    plt.figure()
-    plt.plot(norm_gaps_one, label=f'Avg. = {avg_norm_gap_one:.3f}')
-    plt.axhline(y=avg_norm_gap_one, color='g', linestyle='-', linewidth=1.5)  # Horizontal line at average value
-    plt.text(0, avg_norm_gap_one, f'Avg: {avg_norm_gap_one:.2f}', color='b', va='bottom')  # Add average value label
-    plt.title(f"Normalized length of 1 gap {file_n}")
-    plt.xlabel("Sequence Number")
-    plt.ylabel("Normalized Gap Length")
-    plt.legend()
+# def plot_GDF_ones(norm_gaps_one, file_n=None):
+#     avg_norm_gap_one = sum(norm_gaps_one) / len(norm_gaps_one)
+#     plt.figure()
+#     plt.plot(norm_gaps_one, label=f'Avg. = {avg_norm_gap_one:.3f}')
+#     plt.axhline(y=avg_norm_gap_one, color='g', linestyle='-', linewidth=1.5)  # Horizontal line at average value
+#     plt.text(0, avg_norm_gap_one, f'Avg: {avg_norm_gap_one:.2f}', color='b', va='bottom')  # Add average value label
+#     plt.title(f"Normalized length of 1 gap {file_n}")
+#     plt.xlabel("Sequence Number")
+#     plt.ylabel("Normalized Gap Length")
+#     plt.legend()
 
 
 # Use the functions ====================================================================================================
 file_names = ['../RBG_data_files/QRNG.txt',
-              '../RBG_data_files/AES_DRBG.txt', '../RBG_data_files/BBS_blum_blum_shub.txt',
+              '../RBG_data_files/AES_DRBG.txt',
               '../RBG_data_files/ChaCha20.txt', '../RBG_data_files/CTR_DRBG.txt',
               '../RBG_data_files/hash_drbg.txt',
               '../RBG_data_files/hmac_drbg.txt', '../RBG_data_files/M_sequences.txt',
@@ -108,16 +116,18 @@ file_names = ['../RBG_data_files/QRNG.txt',
               '../RBG_data_files/Synthetic_RBG.txt', '../RBG_data_files/Q_bit-flip_noice_Model.txt',
               '../RBG_data_files/Ideal Q-simulator.txt', '../RBG_data_files/Q_thermal_noice_Model.txt']
 
-for file_name in file_names[7:8]:
+for file_name in file_names[:1]:
     # get the file names
     b_n = os.path.basename(file_name)           # Extract only the file name
     base_name = os.path.splitext(b_n)[0]        # Remove file extension
 
     sequences = read_sequences(file_name)       # collect All the sequences
     ang = get_norm_gaps(sequences)              # all normalised gaps
+    gap_in, gap_out = get_selected_gap(ang, 0)
+    # get_gap1 = get_selected_gap(ang, 1)
 
-    plot_GDF_zeros(ang, base_name)
-    plt.savefig(f"GDF total gaps_{base_name}.png")
+    plot_GDF_zeros(gap_in, gap_out)
+    # plt.savefig(f"Zeros_{base_name}.png")
 
     # plot_GDF_ones(get_gap1, base_name)
     # plt.savefig(f"Ones_{base_name}.png")

@@ -174,16 +174,16 @@ def all_min(seq_):
 def plot_mako(norm_gaps_zero, f_name=None, __min=None):
     avg_norm_gap_zero = sum(norm_gaps_zero) / len(norm_gaps_zero)
     plt.figure()
+    plt.grid(True)
     plt.plot(norm_gaps_zero, label=f'Data\nAvg. = {avg_norm_gap_zero:.3f}')
     plt.axhline(y=__min, color='r', linestyle='-', linewidth=1)  # Horizontal line at y = 0.5
-    plt.axhline(y=avg_norm_gap_zero, color='g', linestyle='-', linewidth=1)  # Horizontal line at average value
-    plt.text(0, avg_norm_gap_zero, f'Avg: {avg_norm_gap_zero:.2f}', color='b', va='bottom')  # Add average value label
-    plt.title(f"Markov - min-entropy estimation for {f_name}")
-    # plt.title(f"Markov estimation on 0 gap probability ")
+    plt.axhline(y=avg_norm_gap_zero, color='g', linestyle='-', linewidth=1, label=f'Avg. = {avg_norm_gap_zero:.5f}')  # Horizontal line at average value
+    # plt.text(0, avg_norm_gap_zero, f'Avg: {avg_norm_gap_zero:.2f}', color='b', va='bottom')  # Add average value label
+    # plt.title(f"Markov - min-entropy estimation for {f_name}")
     plt.xlabel("Sequence Number")
     plt.ylabel("min-entropy")
-    # plt.ylabel("p-value (0 gap)")
-    plt.legend()
+    plt.legend(loc='best')
+    plt.ylim(0.75, 1.0)
 
 
 # Use the functions ====================================================================================================
@@ -195,7 +195,7 @@ file_names = ['../RBG_data_files/AES_DRBG.txt', '../RBG_data_files/BBS_blum_blum
               '../RBG_data_files/Synthetic_RBG.txt', '../RBG_data_files/Q_bit-flip_noice_Model.txt',
               '../RBG_data_files/Ideal Q-simulator.txt', '../RBG_data_files/Q_thermal_noice_Model.txt']
 
-for file_name in file_names[5:6]:
+for file_name in file_names[11:14]:
     # get the file names
     b_n = os.path.basename(file_name)           # Extract only the file name
     base_name = os.path.splitext(b_n)[0]        # Remove file extension
@@ -208,4 +208,4 @@ for file_name in file_names[5:6]:
     plot_mako(mako_min, base_name, av_mim)
     plt.savefig(f"Markov_{base_name}.png")
 
-plt.show()
+# plt.show()

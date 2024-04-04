@@ -121,14 +121,16 @@ def Longest_of_all_sequences(seq_):
 def plot_longest(norm_gaps_zero, f_name=None):
     avg_norm_gap_zero = sum(norm_gaps_zero) / len(norm_gaps_zero)
     plt.figure()
-    plt.plot(norm_gaps_zero, label=f'Data\nAvg. = {avg_norm_gap_zero:.3f}')
-    plt.axhline(y=0.1, color='r', linestyle='-', linewidth=1)  # Horizontal line at y = 0.5
-    plt.axhline(y=avg_norm_gap_zero, color='g', linestyle='-', linewidth=1)  # Horizontal line at average value
+    plt.grid(True)
+    plt.plot(norm_gaps_zero, label=f'Data')
+    plt.axhline(y=0.1, color='r', linestyle='-', linewidth=1, label='Expected = 0.1')  # Horizontal line at y = 0.5
+    plt.axhline(y=avg_norm_gap_zero, color='g', linestyle='-', linewidth=1, label=f'Avg. = {avg_norm_gap_zero:.5f}')  # Horizontal line at average value
     # plt.text(0, avg_norm_gap_zero, f'Avg: {avg_norm_gap_zero* 1e1}', color='b', va='bottom')  # Add average value label
-    plt.title(f"Longest run estimation for {f_name}")
+    # plt.title(f"Longest run estimation for {f_name}")
     plt.xlabel("Sequence Number")
     plt.ylabel("P-value")
-    plt.legend()
+    plt.legend(loc='best')
+    plt.ylim(0.0, 1.5)
 
 
 # seq = '11111101000110010011111000000010000011111110111101111111100000000000111100001000111111010101000101110011010000010001011011011011111010001101110110101101011111110111110100010001011000111111110000001001011100100111001011111010101101010110101000010111010011001101011110100100101011111000100010101010101010101111001001110001110010001100100111011110110010111111000001110001011011100100000101100000111010100111001111100101110101001111000101001001011011110101011111101110101000000110011001001001000101010000011011110010'
