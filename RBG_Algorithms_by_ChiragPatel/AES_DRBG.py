@@ -263,13 +263,13 @@ class AES_DRBG(object):
 
 drbg = AES_DRBG(sel_AES_security_strength)      # Create an instance of the AES_DRBG class with a key length of 256 bits
 drbg.instantiate(in_seed, per_str)                              # Call the instantiate method with the entropy input and the personalization string
-random_bytes = drbg.generate(output_bytes)      # Call the generate method with the number of bytes you want to generate
-print(b2i(random_bytes))                        # Print the random binary sequence in hexadecimal format
+# random_bytes = drbg.generate(output_bytes)      # Call the generate method with the number of bytes you want to generate
+# print(b2i(random_bytes))                        # Print the random binary sequence in hexadecimal format
 
 # Open a file to write
-# with open("AES_DRBG.txt", "w") as file:
-#     for _ in range(100):
-#         random_bytes = drbg.generate(output_bytes)
-#         file.write(b2i(random_bytes) + '\n')
-#
-# print("Files is ready!")
+with open("AES_DRBG.txt", "w") as file:
+    for _ in range(100):
+        random_bytes = drbg.generate(output_bytes)
+        file.write(b2i(random_bytes) + '\n')
+
+print("Files is ready!")

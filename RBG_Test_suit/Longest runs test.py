@@ -130,7 +130,7 @@ def plot_longest(norm_gaps_zero, f_name=None):
     plt.xlabel("Sequence Number")
     plt.ylabel("P-value")
     plt.legend(loc='best')
-    plt.ylim(0.0, 1.5)
+    plt.ylim(-0.10, 1.3)
 
 
 # seq = '11111101000110010011111000000010000011111110111101111111100000000000111100001000111111010101000101110011010000010001011011011011111010001101110110101101011111110111110100010001011000111111110000001001011100100111001011111010101101010110101000010111010011001101011110100100101011111000100010101010101010101111001001110001110010001100100111011110110010111111000001110001011011100100000101100000111010100111001111100101110101001111000101001001011011110101011111101110101000000110011001001001000101010000011011110010'
@@ -142,7 +142,7 @@ def plot_longest(norm_gaps_zero, f_name=None):
 
 
 # Use the functions ====================================================================================================
-file_names = ['../RBG_data_files/AES_DRBG.txt', '../RBG_data_files/BBS_blum_blum_shub.txt',
+file_names = ['../RBG_data_files/AES_DRBG.txt',
               '../RBG_data_files/ChaCha20.txt', '../RBG_data_files/CTR_DRBG.txt',
               '../RBG_data_files/hash_drbg.txt', '../RBG_data_files/QRNG.txt',
               '../RBG_data_files/hmac_drbg.txt', '../RBG_data_files/M_sequences.txt',

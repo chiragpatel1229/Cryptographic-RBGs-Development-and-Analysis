@@ -107,17 +107,14 @@ def plot_GDF_zeros(g_in, g_out, f_name=None):
 
 
 # Use the functions ====================================================================================================
-# file_names = ['../RBG_data_files/QRNG.txt',
-#               '../RBG_data_files/AES_DRBG.txt',
-#               '../RBG_data_files/ChaCha20.txt', '../RBG_data_files/CTR_DRBG.txt',
-#               '../RBG_data_files/hash_drbg.txt',
-#               '../RBG_data_files/hmac_drbg.txt', '../RBG_data_files/M_sequences.txt',
-#               '../RBG_data_files/RC4_algorithm.txt', '../RBG_data_files/RSA_algorithm.txt',
-#               '../RBG_data_files/Synthetic_RBG.txt', '../RBG_data_files/Q_bit-flip_noice_Model.txt',
-#               '../RBG_data_files/Ideal Q-simulator.txt', '../RBG_data_files/Q_thermal_noice_Model.txt']
-
-file_names = ["../RBG_data_files/hmac_drbg.txt"]
-# file_names = ["../RBG_Algorithms_by_ChiragPatel/hmac_drbg.txt", "../hmac_drbg2.txt", "../hmac_drbg.txt"]
+file_names = ['../RBG_data_files/QRNG.txt',
+              '../RBG_data_files/AES_DRBG.txt',
+              '../RBG_data_files/ChaCha20.txt', '../RBG_data_files/CTR_DRBG.txt',
+              '../RBG_data_files/hash_drbg.txt',
+              '../RBG_data_files/hmac_drbg.txt', '../RBG_data_files/M_sequences.txt',
+              '../RBG_data_files/RC4_algorithm.txt', '../RBG_data_files/RSA_algorithm.txt',
+              '../RBG_data_files/Synthetic_RBG.txt', '../RBG_data_files/Q_bit-flip_noice_Model.txt',
+              '../RBG_data_files/Ideal Q-simulator.txt', '../RBG_data_files/Q_thermal_noice_Model.txt']
 
 for file_name in file_names[:]:
     # get the file names

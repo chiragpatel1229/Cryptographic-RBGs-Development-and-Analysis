@@ -105,8 +105,9 @@ def permutation_test(S):
     Ti = runs_tests.calculate_all_test_statistics()
     C = [0, 0, 0]
 
-    for _ in range(5000):
-        S = fisher_yates_shuffle(S)
+    for _ in range(2000):
+        # S = fisher_yates_shuffle(S)
+        random.shuffle(S)
         runs_tests = Runs_tests(S)
         T = runs_tests.calculate_all_test_statistics()
 
@@ -134,14 +135,17 @@ def read_sequences(file_name_):
 # Function to calculate Burstiness of each sequence =======================================================
 def Runs_of_all_sequences(seq_):
     all_runs = []                                          # set a buffer to store the normalised gaps
+    f = 0
     for sequence in seq_:
         statics = permutation_test(sequence)
         all_runs.append(statics)                           # set them with a descending order to ease the further part
+        f += 1
+        print('P =', f)
     return all_runs
 
 
 # Function to plot the normalized gap length of 0 and 1 for all sequences ==============================================
-def plot_burstiness(norm_gaps_zero, f_name=None):
+def plot_burstiness(norm_gaps_zero):
     plt.figure()
     plt.grid(True, which='both')  # Specify grid lines for both axes
     plt.plot(norm_gaps_zero, marker='x', label=f'Data')
@@ -153,7 +157,8 @@ def plot_burstiness(norm_gaps_zero, f_name=None):
 
 
 # Use the functions ====================================================================================================
-file_names = ['../RBG_data_files/AES_DRBG.txt', '../RBG_data_files/BBS_blum_blum_shub.txt',
+file_names = ['../RBG_data_files/QRNG.txt',
+              '../RBG_data_files/AES_DRBG.txt',
               '../RBG_data_files/ChaCha20.txt', '../RBG_data_files/CTR_DRBG.txt',
               '../RBG_data_files/hash_drbg.txt',
               '../RBG_data_files/hmac_drbg.txt', '../RBG_data_files/M_sequences.txt',
@@ -161,7 +166,7 @@ file_names = ['../RBG_data_files/AES_DRBG.txt', '../RBG_data_files/BBS_blum_blum
               '../RBG_data_files/Synthetic_RBG.txt', '../RBG_data_files/Q_bit-flip_noice_Model.txt',
               '../RBG_data_files/Ideal Q-simulator.txt', '../RBG_data_files/Q_thermal_noice_Model.txt']
 
-for file_name in file_names[4:5]:
+for file_name in file_names[:1]:
     # get the file names
     b_n = os.path.basename(file_name)           # Extract only the file name
     base_name = os.path.splitext(b_n)[0]        # Remove file extension
@@ -169,7 +174,7 @@ for file_name in file_names[4:5]:
     sequences = read_sequences(file_name)       # collect All the sequences
     Runs = Runs_of_all_sequences(sequences)  # all normalised gaps
 
-    plot_burstiness(Runs, base_name)
-    # plt.savefig(f"IID_Num_Runs_{base_name}")
+    plot_burstiness(Runs)
+    plt.savefig(f"IID_Num_Runs_{base_name}")
 
 plt.show()

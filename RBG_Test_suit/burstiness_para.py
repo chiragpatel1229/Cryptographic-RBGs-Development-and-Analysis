@@ -70,13 +70,17 @@ def burstiness_of_all_sequences(seq_):
 def plot_burstiness(norm_gaps_zero, f_name=None):
     avg_norm_gap_zero = sum(norm_gaps_zero) / len(norm_gaps_zero)
     plt.figure()
-    plt.plot(norm_gaps_zero, label=f'Data\nAvg. = {avg_norm_gap_zero:.5f}')
-    plt.axhline(y=avg_norm_gap_zero, color='g', linestyle='-', linewidth=1)  # Horizontal line at average value
-    plt.text(0, avg_norm_gap_zero, f'Avg: {avg_norm_gap_zero:.2f}', color='b', va='bottom')  # Add average value label
-    plt.title(f"Burstiness parameter 'B' for {f_name}")
+    plt.grid(True)
+    plt.plot(norm_gaps_zero, label=f'Data')
+    plt.axhline(y=0.0, color='r', linestyle='-', linewidth=1, label='Expected = 0.0')  # Horizontal line at y = 0.5
+    plt.axhline(y=avg_norm_gap_zero, color='g', linestyle='-', linewidth=1, label=f'Avg. = {avg_norm_gap_zero:.5f}')  # Horizontal line at average value
+    # plt.text(0, avg_norm_gap_zero, f'Avg: {avg_norm_gap_zero:.2f}', color='b', va='bottom')  # Add average value label
+    # plt.title(f"Burstiness parameter 'B' for {f_name}")
     plt.xlabel("Sequence Number")
-    plt.ylabel("B")
-    plt.legend()
+    plt.ylabel("B-parameter")
+    plt.legend(loc='best')
+    plt.ylim(-1, 1)
+
 
 
 # s = '00100000100111111100001110110111101010000100110111000000110001100101011111000110110011100001111001100001101001011110011100010000000011110110101100001111100010010100011011111001011111111001000011000000011111101110001100101100010101110111000010011111010111011100101001001110111111100101111010111100110001101011001001110001011000110001000111000011001000010001110100110000010001001010011000100010001100111101000100100101111110001010000101111111000000001011001111011010110101000001111101000001000001111000010000111001'
@@ -92,7 +96,8 @@ def plot_burstiness(norm_gaps_zero, f_name=None):
 # print(burst)
 
 # Use the functions ====================================================================================================
-file_names = ['../RBG_data_files/AES_DRBG.txt', '../RBG_data_files/BBS_blum_blum_shub.txt',
+file_names = ['../RBG_data_files/QRNG.txt',
+              '../RBG_data_files/AES_DRBG.txt',
               '../RBG_data_files/ChaCha20.txt', '../RBG_data_files/CTR_DRBG.txt',
               '../RBG_data_files/hash_drbg.txt',
               '../RBG_data_files/hmac_drbg.txt', '../RBG_data_files/M_sequences.txt',
@@ -109,6 +114,6 @@ for file_name in file_names[:]:
     burst = burstiness_of_all_sequences(sequences)     # all normalised gaps
 
     plot_burstiness(burst, base_name)
-    # plt.savefig(f"B_{base_name}")
+    plt.savefig(f"B_{base_name}")
 
 plt.show()

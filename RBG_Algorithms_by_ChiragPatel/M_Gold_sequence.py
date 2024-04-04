@@ -13,8 +13,8 @@ the code need to be modified accordingly in the sections 5.0 and 6.0"""
 
 # 0.0 ================================= USER INPUTS ====================================================================
 
-polynomial_1 = [23, 15, 5, 3, 2]                # Any poly. can be selected here as an input
-polynomial_2 = [21, 19, 7, 5, 4]                # Any poly. can be selected here as an input
+polynomial_1 = [13, 4, 3, 1]                # Any poly. can be selected here as an input
+polynomial_2 = [14, 5, 3, 1]                # Any poly. can be selected here as an input
 initial_state_1 = None                          # if None, the initial state will be random
 initial_state_2 = None                          # if None, the initial state will be random
 
@@ -153,7 +153,7 @@ def print_Seq(parameters_name, seq, len_list):
 # print(f"Gold Sequence Balance: 0s = {G_seq.count(0)}, 1s = {G_seq.count(1)}\n")
 
 # Open a file to write
-with open("../RBG_data_files/M_sequences.txt", "w") as file:
+with open("M_sequences.txt", "w") as file:
     for _ in range(100):
         M_sequence_2 = generate_m_sequence(polynomial_2, seq_len, initial_state_2)
         f = []

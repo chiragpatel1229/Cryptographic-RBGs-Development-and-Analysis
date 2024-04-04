@@ -57,7 +57,7 @@ circuit.h(q)
 circuit.measure(q, c)
 
 # Initialize all buffers
-buffers = ['']*100
+buffers = ['']*100              # it is for multiplication with iterations to generate seq.
 
 for i in range(40):
     job = execute(circuit, backend, shots=101)              # the shots will decide the number of sequences
@@ -80,4 +80,3 @@ with open('QRNG.txt', 'w') as f:
     for i, buffer in enumerate(buffers):
         f.write(buffer + '\n')
 
-        111111111000000000110100101101000100111000001100100101100100110000101100

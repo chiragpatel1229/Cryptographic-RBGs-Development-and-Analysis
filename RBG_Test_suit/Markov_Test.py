@@ -183,19 +183,21 @@ def plot_mako(norm_gaps_zero, f_name=None, __min=None):
     plt.xlabel("Sequence Number")
     plt.ylabel("min-entropy")
     plt.legend(loc='best')
-    plt.ylim(0.75, 1.0)
+    plt.ylim(1.0, 0.85)
 
 
 # Use the functions ====================================================================================================
-file_names = ['../RBG_data_files/AES_DRBG.txt', '../RBG_data_files/BBS_blum_blum_shub.txt',
-              '../RBG_data_files/ChaCha20.txt', '../RBG_data_files/CTR_DRBG.txt',
-              '../RBG_data_files/hash_drbg.txt', '../RBG_data_files/QRNG.txt',
-              '../RBG_data_files/hmac_drbg.txt', '../RBG_data_files/M_sequences.txt',
-              '../RBG_data_files/RC4_algorithm.txt', '../RBG_data_files/RSA_algorithm.txt',
-              '../RBG_data_files/Synthetic_RBG.txt', '../RBG_data_files/Q_bit-flip_noice_Model.txt',
-              '../RBG_data_files/Ideal Q-simulator.txt', '../RBG_data_files/Q_thermal_noice_Model.txt']
+# file_names = ['../RBG_data_files/AES_DRBG.txt',
+#               '../RBG_data_files/ChaCha20.txt', '../RBG_data_files/CTR_DRBG.txt',
+#               '../RBG_data_files/hash_drbg.txt', '../RBG_data_files/QRNG.txt',
+#               '../RBG_data_files/hmac_drbg.txt', '../RBG_data_files/M_sequences.txt',
+#               '../RBG_data_files/RC4_algorithm.txt', '../RBG_data_files/RSA_algorithm.txt',
+#               '../RBG_data_files/Synthetic_RBG.txt', '../RBG_data_files/Q_bit-flip_noice_Model.txt',
+#               '../RBG_data_files/Ideal Q-simulator.txt', '../RBG_data_files/Q_thermal_noice_Model.txt']
 
-for file_name in file_names[11:14]:
+file_names = ['../RBG_data_files/RC4_algorithm.txt']
+
+for file_name in file_names[:]:
     # get the file names
     b_n = os.path.basename(file_name)           # Extract only the file name
     base_name = os.path.splitext(b_n)[0]        # Remove file extension
