@@ -105,9 +105,8 @@ def permutation_test(S):
     Ti = runs_tests.calculate_all_test_statistics()
     C = [0, 0, 0]
 
-    for _ in range(2000):
-        # S = fisher_yates_shuffle(S)
-        random.shuffle(S)
+    for _ in range(10000):
+        S = fisher_yates_shuffle(S)
         runs_tests = Runs_tests(S)
         T = runs_tests.calculate_all_test_statistics()
 

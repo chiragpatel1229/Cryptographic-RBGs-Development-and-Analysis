@@ -9,7 +9,7 @@ from cryptography.hazmat.backends import default_backend
 The security strength is the entropy that is required to initiate and reseed the DRBG. For HASH and HMAC the output
 length is equal to the security strength per request, if more bits then the loop has to iterate further until the 
 reseed counter limit is reached then the DRBG has to be reseeded again.
-"""
+
 
 # References: The HMAC-DRBG mechanism based on NIST SP800-90A Publication
 # Please consider all the Input parameters in bytes...
@@ -18,6 +18,7 @@ reseed counter limit is reached then the DRBG has to be reseeded again.
 # reseed counter reach the max interval leval the drbg need to be reseeded using the reseed function with new entropy and data
 # Comments and the variable names are also referenced from the given NIST document
 
+"""
 
 # 0.0 =========== User Inputs ==========================================================================================
 

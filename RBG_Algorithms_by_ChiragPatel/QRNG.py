@@ -17,6 +17,13 @@ provider = IBMProvider("966bbf0869e7e72d9db993ddcf646794695d32a38f8e9f0d76eb6553
 # print(provider.backends())                              # Check the available backends
 backend = provider.get_backend('simulator_mps')             # select the backend device or simulator
 
+""" 
+
+  PART 1: GENERATE 2 SEQUENCE AT A TIME WITH A BASIC VERSION...
+  
+"""
+
+
 # q = QuantumRegister(100, 'q')                            # set Quantum Register with up-to 63 qubits
 # c = ClassicalRegister(100, 'c')                          # set Classical Register with up-to 63 qubits
 #
@@ -48,6 +55,14 @@ backend = provider.get_backend('simulator_mps')             # select the backend
 # print('seq_1 ', binary_sequence_1, '\nseq_2 ', binary_sequence_2, '\n')
 # print("Similarity between sequences:", binary_sequence_1 == binary_sequence_2, '\n')
 # print('1', len(binary_sequence_1), '\n2', len(binary_sequence_2))
+
+
+""" 
+
+  PART 2: GENERATE NUMEROUS SEQUENCES BY EXTRACTING COUNT DIRECTORY WITH AN ADVANCED VERSION...
+
+"""
+
 
 q = QuantumRegister(100, 'q')
 c = ClassicalRegister(100, 'c')
