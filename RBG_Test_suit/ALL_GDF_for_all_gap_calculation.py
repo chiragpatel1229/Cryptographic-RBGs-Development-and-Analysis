@@ -107,7 +107,7 @@ def plot_GDF_zeros(g_in, g_out, f_name=None):
 
 
 # Use the functions ====================================================================================================
-file_names = ['../RBG_Algorithms_by_ChiragPatel/hmac_drbg.txt',
+file_names = ['../RBG_Algorithms_by_ChiragPatel/CTR_drbg.txt',
               '../RBG_data_files/QRNG.txt',
               '../RBG_data_files/AES_DRBG.txt',
               '../RBG_data_files/ChaCha20.txt', '../RBG_data_files/CTR_DRBG.txt',
