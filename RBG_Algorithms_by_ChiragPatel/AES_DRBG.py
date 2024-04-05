@@ -267,9 +267,27 @@ drbg.instantiate(in_seed, per_str)                              # Call the insta
 # print(b2i(random_bytes))                        # Print the random binary sequence in hexadecimal format
 
 # Open a file to write
-with open("AES_DRBG.txt", "w") as file:
-    for _ in range(100):
-        random_bytes = drbg.generate(output_bytes)
-        file.write(b2i(random_bytes) + '\n')
+# with open("AES_DRBG.txt", "w") as file:
+#     for _ in range(100):
+#         random_bytes = drbg.generate(output_bytes)
+#         file.write(b2i(random_bytes) + '\n')
+#
+# print("Files is ready!")
 
-print("Files is ready!")
+from RBG_Test_suit import Filter
+
+# Open a file to write
+with open("AES_drbg.txt", "w") as file:
+    count = 0  # Counter to keep track of saved sequences
+    for _ in range(100):
+        ran = drbg.generate(output_bytes)
+        random_seq = b2i(ran)
+        gdf_value = Filter.check(random_seq)
+        max_gdf_value = max(gdf_value)
+        if 0.48 < max_gdf_value < 0.52:
+            file.write(str(random_seq) + '\n')
+            count += 1
+        if count == 100:
+            break  # Exit the loop with 100 sequences
+
+    print("Files are ready!")

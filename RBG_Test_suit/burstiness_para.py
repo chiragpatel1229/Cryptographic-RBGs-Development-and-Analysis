@@ -105,7 +105,7 @@ file_names = ['../RBG_data_files/QRNG.txt',
               '../RBG_data_files/Synthetic_RBG.txt', '../RBG_data_files/Q_bit-flip_noice_Model.txt',
               '../RBG_data_files/Ideal Q-simulator.txt', '../RBG_data_files/Q_thermal_noice_Model.txt']
 
-for file_name in file_names[:]:
+for file_name in file_names[6:7]:
     # get the file names
     b_n = os.path.basename(file_name)           # Extract only the file name
     base_name = os.path.splitext(b_n)[0]        # Remove file extension

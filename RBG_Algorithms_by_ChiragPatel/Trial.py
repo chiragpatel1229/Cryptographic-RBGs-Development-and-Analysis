@@ -163,11 +163,21 @@ drbg.reseed()
 # random_seq = drbg.generate(num_bytes=output_bytes, requested_security_strength=security_strength)
 # print(b2i(random_seq), "\n", "Total number of Bits:", len(b2i(random_seq)))
 
+
+from RBG_Test_suit import Filter
+
 # Open a file to write
 with open("hmac_drbg.txt", "w") as file:
+    count = 0  # Counter to keep track of saved sequences
     for _ in range(100):
-        random_seq = drbg.generate(num_bytes=output_bytes, requested_security_strength=security_strength)
-        file.write(b2i(random_seq) + '\n')
+        ran = drbg.generate(num_bytes=output_bytes, requested_security_strength=security_strength)
+        random_seq = b2i(ran)
+        gdf_value = Filter.check(random_seq)
+        max_gdf_value = max(gdf_value)
+        if 0.48 < max_gdf_value < 0.52:
+            file.write(str(random_seq) + '\n')
+            count += 1
+        if count == 100:
+            break  # Exit the loop with 100 sequences
 
-print("Files is ready!")
-
+    print("Files are ready!")

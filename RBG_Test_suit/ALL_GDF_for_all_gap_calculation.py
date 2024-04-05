@@ -107,7 +107,8 @@ def plot_GDF_zeros(g_in, g_out, f_name=None):
 
 
 # Use the functions ====================================================================================================
-file_names = ['../RBG_data_files/QRNG.txt',
+file_names = ['../RBG_Algorithms_by_ChiragPatel/hmac_drbg.txt',
+              '../RBG_data_files/QRNG.txt',
               '../RBG_data_files/AES_DRBG.txt',
               '../RBG_data_files/ChaCha20.txt', '../RBG_data_files/CTR_DRBG.txt',
               '../RBG_data_files/hash_drbg.txt',
@@ -116,7 +117,7 @@ file_names = ['../RBG_data_files/QRNG.txt',
               '../RBG_data_files/Synthetic_RBG.txt', '../RBG_data_files/Q_bit-flip_noice_Model.txt',
               '../RBG_data_files/Ideal Q-simulator.txt', '../RBG_data_files/Q_thermal_noice_Model.txt']
 
-for file_name in file_names[:]:
+for file_name in file_names[:1]:
     # get the file names
     b_n = os.path.basename(file_name)           # Extract only the file name
     base_name = os.path.splitext(b_n)[0]        # Remove file extension
@@ -127,9 +128,9 @@ for file_name in file_names[:]:
     # get_gap1 = get_selected_gap(ang, 1)
 
     plot_GDF_zeros(gap_in, gap_out)
-    # plt.savefig(f"Zeros_{base_name}.png")
+    plt.savefig(f"Zeros_{base_name}.png")
 
     # plot_GDF_ones(get_gap1, base_name)
     # plt.savefig(f"Ones_{base_name}.png")
-#
+
 plt.show()

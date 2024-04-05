@@ -334,3 +334,21 @@ print(len(req_bits))
 #         file.write(b2i(random_bytes) + '\n')
 #
 # print("Files is ready!")
+
+from RBG_Test_suit import Filter
+
+# Open a file to write
+with open("CTR_drbg.txt", "w") as file:
+    count = 0  # Counter to keep track of saved sequences
+    for _ in range(100):
+        ran = drbg.generate(output_bytes)
+        random_seq = b2i(ran)
+        gdf_value = Filter.check(random_seq)
+        max_gdf_value = max(gdf_value)
+        if 0.45 < max_gdf_value < 0.55:
+            file.write(str(random_seq) + '\n')
+            count += 1
+        if count == 100:
+            break  # Exit the loop with 100 sequences
+
+    print("Files are ready!")

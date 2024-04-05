@@ -8,17 +8,34 @@ This file also generates a Gold Code sequence using selected M-sequences by its 
 
 The user can select only two polynomial and its relevant seeds for the current code. if more parameters are require then
 the code need to be modified accordingly in the sections 5.0 and 6.0"""
+"""
+recommended polynomials list with power of 12... (https://www.partow.net/programming/polynomials/index.html)
 
+[12, 6, 4, 1]
+[12, 9, 3, 2]
+[12, 9, 8, 3, 2, 1]
+[12, 10, 9, 8, 6, 2]
+[12, 10, 9, 8, 6, 5, 4, 2]
+[12, 11, 6, 4, 2, 1]
+[12, 11, 9, 5, 3, 1]
+[12, 11, 9, 7, 6, 4]
+[12, 11, 9, 7, 6, 5]
+[12, 11, 9, 8, 7, 4]
+[12, 11, 9, 8, 7, 5, 2, 1]
+[12, 11, 10, 5, 2, 1]
+[12, 11, 10, 8, 6, 4, 3, 1]
+[12, 11, 10, 9, 8, 7, 5, 4, 3, 1]
+"""
 # This algorithm will generate a random initial state for provided primitive polynomial if the user has not provided
 
 # 0.0 ================================= USER INPUTS ====================================================================
 
 polynomial_1 = [13, 4, 3, 1]                # Any poly. can be selected here as an input
-polynomial_2 = [14, 5, 3, 1]                # Any poly. can be selected here as an input
+polynomial_2 = [12, 10, 9, 8, 6, 5, 4, 2]                # Any poly. can be selected here as an input
 initial_state_1 = None                          # if None, the initial state will be random
 initial_state_2 = None                          # if None, the initial state will be random
 
-seq_len = [4000]                                # sequence length can be both a [single integer or a list]
+seq_len = [4095]                                # sequence length can be both a [single integer or a list]
 
 # select the "index-number" from the seq_len list to generate the Gold sequence ========================================
 selected_index_number_for_gold_seq = 1      # select the number from 1 to end of list from seq_len

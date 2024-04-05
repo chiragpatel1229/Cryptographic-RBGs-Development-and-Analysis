@@ -20,22 +20,6 @@ def cal_gaps(_sequence):
     print("gaps: ", gap)
     return gap
 
-# def cal_gaps(_sequence):
-#     gap = []
-#     gap_counter = 0
-#     no_gap = 0                  # when we do not know the first bit is 1 or 0 so the condition is false
-#
-#     for bits in _sequence:
-#         if bits == 1:
-#             gap_counter += 1    # calculate the number of continued zeros between two ones
-#         elif bits == 0:         # finds the 1s in a list start checking for no gaps.
-#             if no_gap:          # if there are two continued 1s in a list then append the counter
-#                 gap.append(gap_counter)  # add 0s in every step with no gap
-#             gap_counter = 0     # Reset the counter
-#             no_gap = 1          # found the no_gap in the list, it is true
-#     print(_sequence)
-#     print("gaps: ", gap)
-#     return gap
 
 # ==================== Count and Normalise the gap structure ===========================================================
 def cal_norm_gaps(my_seq):                   # find the unique gaps in the sequence
