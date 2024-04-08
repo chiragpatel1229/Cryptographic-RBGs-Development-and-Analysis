@@ -156,7 +156,7 @@ def decrypt(private_key, ciphertext):
 # 8.0 =========== end ==================================================================================================
 sec_ = secrets.SystemRandom()
 # Open a file to write
-with open("../RBG_data_files/RSA_algorithm.txt", "w") as file, open("../RBG_data_files/RSA_keys.txt", "w") as key_file:
+with open("../RBG_data_files/RSA.txt", "w") as file:
     for _ in range(100):
         rnd_p = sec_.randrange(100 , 1000)
         rnd_q = sec_.randrange(100 , 1000)
@@ -166,7 +166,6 @@ with open("../RBG_data_files/RSA_algorithm.txt", "w") as file, open("../RBG_data
         cipher_text = ''.join([format(i, '08b') for i in encrypted_msg])
 
         file.write(cipher_text[:4000] + '\n')
-        key_file.write(str(public) + str(private) + '\n')  # Store the drbg_1 output
 
 print("Files are ready!")
 

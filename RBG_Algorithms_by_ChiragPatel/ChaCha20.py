@@ -6,15 +6,17 @@ import os
 -> The chacha20 block cipher generates 512 bits per execution but a very small change in the input, even a single byte
    of change in the input can produce completely different output
 -> This algorithm is tested against the given parameters in the research paper
+-> This algorithm is modified in way to generate 4000 bits per execution by setting the 
+    block generation function in loop.
 """
 # References: ChaCha20 and Poly1305 for IETF Protocols: RFC 8439
 
 
 # 0.0 User INPUT, Define the key, counter and nonce ====================================================================
 
-key_in = os.urandom(32)                                     # the secret key should be always 32 bytes (256-bit) random string
-counter_in = 1                                              # initial counter should be 1 or 0, 4 bytes (32 bits)
-nonce_in = os.urandom(12)                                   # nonce could be any string of 12 bytes (96-bit)
+# key_in = os.urandom(32)                                     # the secret key should be always 32 bytes (256-bit) random string
+# counter_in = 1                                              # initial counter should be 1 or 0, 4 bytes (32 bits)
+# nonce_in = os.urandom(12)                                   # nonce could be any string of 12 bytes (96-bit)
 
 
 # 1.0 =========== Convert The Data Types to Store ========================================================================
@@ -29,7 +31,7 @@ def b2i(data):                                              # convert bytes to a
 
 # 2.0 =========== Convert The Data Types to Store ======================================================================
 
-def chacha20_block(key, counter, nonce):
+def chacha20_block(key, counter, nonce, num_bits):
 
     # 2.1. Block =========== state selection function to perform rounds ================================================
 
@@ -95,15 +97,27 @@ def chacha20_block(key, counter, nonce):
     key_stream = b""                                        # initialize an empty string buffer
     counter_bytes = struct.pack('<L', counter)              # serialize the result by sequencing each word in little-endian order
 
-    block = chacha20_block_function(key, counter_bytes, nonce)  # Generate 64 bytes of key_in stream (only one block at a time)
-    key_stream += block
+    while len(key_stream) * 8 < num_bits:
+        block = chacha20_block_function(key, counter_bytes, nonce)
+        key_stream += block
 
-    return key_stream
+    return key_stream[:num_bits // 8]
 
 
 # 3.0 =========== Call the function ====================================================================================
 
-# sequence = chacha20_block(key_in, counter_in, nonce_in)
-# print(b2i(sequence), "\n", "Total number of Bits:", len(b2i(sequence)))
+num_sequences = 100
+bits_per_sequence = 4000
+
+with open('ChaCha20.txt', 'w') as file:
+    for _ in range(num_sequences):
+        key_in = os.urandom(32)  # the secret key should be always 32 bytes (256-bit) random string
+        counter_in = 1  # initial counter should be 1 or 0, 4 bytes (32 bits)
+        nonce_in = os.urandom(12)  # nonce could be any string of 12 bytes (96-bit)
+        sequence = chacha20_block(key_in, counter_in, nonce_in, bits_per_sequence)
+        binary_sequence = ''.join(map(str, b2i(sequence)))
+        file.write(binary_sequence + '\n')
+
+print("Sequences generated and saved to 'sequences.txt'")
 
 

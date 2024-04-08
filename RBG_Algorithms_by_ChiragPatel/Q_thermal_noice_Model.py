@@ -94,7 +94,7 @@ circ_thermal = passmanager.run(circ)
 binary_sequence = ''
 
 # Number of times to run the circuit to get 512 bits
-num_runs = 64 // n_qubits
+num_runs = 24 // n_qubits
 
 for _ in range(num_runs):
     # Run and get counts

@@ -91,12 +91,11 @@ print("Cipher Text: ", cipher_text, "\n\nBinary Bits: ", b2i(cipher_text), "\n",
 print("Converted Plain text: ", plain)                      # print the decrypted text from cypher text
 
 # Open a file to write
-# with open("RC4_algorithm.txt", "w") as file, open("RC4_keys.txt", "w") as key_file:
+# with open("RC4_algorithm.txt", "w") as file:
 #     for _ in range(100):
-#         key = urandom(24)
+#         key = urandom(256)
 #         drbg_1 = RC4(key)
 #         cipher_text = drbg_1.en_de_crypt(plain_text)
 #         file.write(b2i(cipher_text) + '\n')
-#         key_file.write(key.hex() + '\n')
 #
 # print("Files are ready!")

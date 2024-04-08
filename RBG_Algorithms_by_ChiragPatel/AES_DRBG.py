@@ -279,7 +279,7 @@ from RBG_Test_suit import Filter
 # Open a file to write
 with open("AES_drbg.txt", "w") as file:
     count = 0  # Counter to keep track of saved sequences
-    for _ in range(100):
+    for _ in range(200):
         ran = drbg.generate(output_bytes)
         random_seq = b2i(ran)
         gdf_value = Filter.check(random_seq)

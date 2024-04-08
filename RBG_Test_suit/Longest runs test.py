@@ -118,15 +118,17 @@ def Longest_of_all_sequences(seq_):
 
 
 # Function to plot the normalized gap length of 0 and 1 for all sequences ==============================================
-def plot_longest(norm_gaps_zero, f_name=None):
-    avg_norm_gap_zero = sum(norm_gaps_zero) / len(norm_gaps_zero)
+def plot_longest(g_in, f_name=None):
+    avg_norm_gap_zero = sum(g_in) / len(g_in)
+    print(f"{f_name}: {avg_norm_gap_zero:.5f}")
     plt.figure()
     plt.grid(True)
-    plt.plot(norm_gaps_zero, label=f'Data')
+    plt.plot(g_in, label='data')
     plt.axhline(y=0.1, color='r', linestyle='-', linewidth=1, label='Expected = 0.1')  # Horizontal line at y = 0.5
-    plt.axhline(y=avg_norm_gap_zero, color='g', linestyle='-', linewidth=1, label=f'Avg. = {avg_norm_gap_zero:.5f}')  # Horizontal line at average value
-    # plt.text(0, avg_norm_gap_zero, f'Avg: {avg_norm_gap_zero* 1e1}', color='b', va='bottom')  # Add average value label
-    # plt.title(f"Longest run estimation for {f_name}")
+    plt.axhline(y=avg_norm_gap_zero, color='g', linestyle='-', linewidth=1,
+                label=f'Avg. = {avg_norm_gap_zero:.5f}')  # Horizontal line at average value
+    # plt.text(0, avg_norm_gap_zero, f'Avg: {avg_norm_gap_zero:.2f}', color='b', va='bottom')  # Add average value label
+    # plt.title(f"Normalized length of 0 gap {f_name}")
     plt.xlabel("Sequence Number")
     plt.ylabel("P-value")
     plt.legend(loc='best')
@@ -150,7 +152,9 @@ file_names = ['../RBG_data_files/AES_DRBG.txt',
               '../RBG_data_files/Synthetic_RBG.txt', '../RBG_data_files/Q_bit-flip_noice_Model.txt',
               '../RBG_data_files/Ideal Q-simulator.txt', '../RBG_data_files/Q_thermal_noice_Model.txt']
 
-for file_name in file_names[6:7]:
+# file_names = ['../RBG_data_files/Q_thermal_noice_Model.txt']
+
+for file_name in file_names[:]:
     # get the file names
     b_n = os.path.basename(file_name)           # Extract only the file name
     base_name = os.path.splitext(b_n)[0]        # Remove file extension
@@ -159,6 +163,6 @@ for file_name in file_names[6:7]:
     burst = Longest_of_all_sequences(sequences)     # all normalised gaps
 
     plot_longest(burst, base_name)
-    plt.savefig(f"Longest_{base_name}")
-
-plt.show()
+#     plt.savefig(f"Longest_{base_name}")
+#
+# plt.show()

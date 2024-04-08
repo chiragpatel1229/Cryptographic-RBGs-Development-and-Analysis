@@ -25,7 +25,7 @@ number_of_bits = 5000        # number of bits to generate
 # 1.0 Quantum random bit generator =====================================================================================
 
 
-class SyntheticRNG(object):
+class SyntheticRBG(object):
 
     # 1.1 Initiate the quantum class ===================================================================================
 
@@ -49,6 +49,7 @@ class SyntheticRNG(object):
         x = self.sec_.randrange(17 * 10 ** 100, 31 * 10 ** 100)  # Get the first random int to create a random prime
         y = self.sec_.randrange(17 * 10 ** 100, 31 * 10 ** 100)  # Get the second random int to create a random prime
         # self._update()                                         # just to show that the quantum bits are being added to the entropy pool
+        self.seed = secrets.randbelow(7 * 10 ** 100)  # Generate a random number from 0 to the given number (0, n-1)
 
         self.p = self.next_prime(x)                        # set the prime number for p based on the x value
         self.q = self.next_prime(y)                        # set the prime number for q based on the y value
@@ -58,7 +59,7 @@ class SyntheticRNG(object):
         length = len(str(self.q))
         print("Length of the large integer Q:", length)
 
-        self.seed = secrets.randbelow(7 * 10 ** 100)        # Generate a random number from 0 to the given number (0, n-1)
+
 
 
     # 1.2  A function to find the next possible prime number to generate the modulus ===================================
@@ -215,8 +216,8 @@ class SyntheticRNG(object):
 
 # 2.0 Execute the Quantum Random Bit Generator class ===================================================================
 
-# Create an instance of SyntheticRNG =====================================================================================
-quantum_rng = SyntheticRNG('Synthetic_API_token.txt')
+# Create an instance of SyntheticRBG =====================================================================================
+quantum_rng = SyntheticRBG('Synthetic_API_token.txt')
 
 # Generate random bits =================================================================================================
 for _ in range(0,1):
