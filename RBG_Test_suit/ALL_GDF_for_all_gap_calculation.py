@@ -139,7 +139,7 @@ file_names = ['../RBG_data_files/QRNG.txt',
 
 # file_names = ['../RBG_data_files/Q_thermal_noice_Model.txt']
 
-for file_name in file_names[4:6]:
+for file_name in file_names[:]:
     # get the file names
     b_n = os.path.basename(file_name)           # Extract only the file name
     base_name = os.path.splitext(b_n)[0]        # Remove file extension
@@ -150,8 +150,8 @@ for file_name in file_names[4:6]:
     # get_gap1 = get_selected_gap(ang, 1)
 
 
-    plot_GDF_zeros(gap_in, gap_out, base_name)
-    plt.savefig(f"Zeros_{base_name}.png")
+    # plot_GDF_zeros(gap_in, gap_out, base_name)
+    # plt.savefig(f"Zeros_{base_name}.png")
 
 
 
@@ -166,15 +166,16 @@ for file_name in file_names[4:6]:
 
     # Use the mse functions ============================================================================================
 
-    # avg_zero = sum(gap_in) / len(gap_in)
-    #
-    # actual_values = [0.5]  # Define the list of actual values
-    # mse_values = []  # Compute the MSE values for different predicted values
-    # mse_value = mse(actual_values, [avg_zero])
-    # mse_values.append(mse_value)
+    avg_zero = sum(gap_in) / len(gap_in)
+    avg_zero = "{:.2f}".format(avg_zero)
 
-    # print(f"{base_name}: {mse_values[0]:.2e}")
+    actual_values = [0.50]  # Define the list of actual values
+    mse_values = []  # Compute the MSE values for different predicted values
+    mse_value = mse(actual_values, [float(avg_zero)])
+    mse_values.append(mse_value)
+
+    print(f"{base_name}: {mse_values[0]:.2e}      test avg: {avg_zero}")
 
     # Use the functions ====================================================================================================
 
-plt.show()
+# plt.show()
