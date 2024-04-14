@@ -66,22 +66,31 @@ def get_norm_gaps(seq_):
 def get_selected_gap(seq_list, gap_index_value):
     sel_gaps = []
     for n in seq_list:
-        # Check for list is empty or not
-        if len(n) > 0:
+        if gap_index_value < len(n):  # Check if gap_index_value is a valid index for n
             sel_gaps.append(n[gap_index_value])
         else:
-            # If empty, append 0
-            sel_gaps.append(0)
+            sel_gaps.append(0)  # Append a default value if gap_index_value is not a valid index
     return sel_gaps
 
 
+# Function to get particular gap lengths from the list of sequences ====================================================
 def get_all_gaps(seq_list):
+
+    lengths = []                            # Initialize an empty list to store the lengths
+    for n in seq_list:
+        sequence_length = len(n)            # Get the length of the current sequence
+        lengths.append(sequence_length)     # Append the length to the lengths list
+
+    max_length = max(lengths)               # Get the maximum length from the lengths list
+
+    max_gap_index = max_length - 1          # Subtract 1 from the maximum length to get the maximum gap index
+
     all_gaps = []
-    max_gap_index = max([len(n) for n in seq_list]) - 1  # Get the maximum gap index
     for gap_index in range(max_gap_index + 1):  # Loop through each gap index
         gap_values = get_selected_gap(seq_list, gap_index)
         all_gaps.append(gap_values)
     return all_gaps
+
 
 # Function to plot the normalized gap length of 0 and 1 for all sequences ==============================================
 def plot_GDF_zeros(norm_gaps_zero, f_name=None):
@@ -97,40 +106,63 @@ def plot_GDF_zeros(norm_gaps_zero, f_name=None):
     plt.legend()
 
 
-def plot_all_gaps(all_gaps, f_name=None):
+# Function to plot the boxes for normalized gaps =======================================================================
+def plot_boxplot(all_norm_gaps, f_name=None):
+    # Transpose the list of all normalized gaps
+    transposed_gaps = list(map(list, zip(*all_norm_gaps)))
+
     plt.figure()
-    plt.boxplot(all_gaps, vert=False)  # Create a horizontal box plot
-    plt.title(f"All Gaps for {f_name}")
-    plt.xlabel("Normalized Gap Length")
-    plt.ylabel("Gap Index")
-    plt.savefig(f"All_Gaps_{f_name}.png")
+    plt.boxplot(transposed_gaps, showfliers=True)  # Show individual data points
+
+    # Add individual data points to the plot ===========================================================================
+    # Start the enumeration from 1
+    i = 1
+    # Iterate over each item in transposed_gaps
+    for norm_gaps in transposed_gaps:
+        # Create a list of 'i' repeated len(norm_gaps) times
+        x_values = [i] * len(norm_gaps)
+        # Plot the data points
+        plt.plot(x_values, norm_gaps, 'rx', alpha=0.3)
+        # Increment the counter
+        i += 1
+
+    plt.title(f"{f_name} RBG analysis with GDF")
+    plt.xlabel("Gap Lengths")
+    plt.ylabel("Normalized (V)")
+    plt.savefig(f"Boxplot_{f_name}.png")
+
+
 
 
 # Use the functions ====================================================================================================
 file_names = ['../RBG_data_files/QRNG.txt',
-              '../RBG_data_files/AES_DRBG.txt', '../RBG_data_files/BBS_blum_blum_shub.txt',
-              '../RBG_data_files/ChaCha20.txt', '../RBG_data_files/CTR_DRBG.txt',
-              '../RBG_data_files/hash_drbg.txt',
-              '../RBG_data_files/hmac_drbg.txt', '../RBG_data_files/M_sequences.txt',
-              '../RBG_data_files/RC4_algorithm.txt', '../RBG_data_files/RSA_algorithm.txt',
-              '../RBG_data_files/Synthetic_RBG.txt', '../RBG_data_files/Q_bit-flip_noice_Model.txt',
-              '../RBG_data_files/Ideal Q-simulator.txt', '../RBG_data_files/Q_thermal_noice_Model.txt']
+              '../RBG_data_files/AES.txt',
+              '../RBG_data_files/ChaCha20.txt', '../RBG_data_files/CTR.txt',
+              '../RBG_data_files/Hash.txt',
+              '../RBG_data_files/HMAC.txt', '../RBG_data_files/M_sequences.txt',
+              '../RBG_data_files/RC4.txt', '../RBG_data_files/RSA.txt',
+              '../RBG_data_files/Synthetic.txt', '../RBG_data_files/bit-flip_Model.txt',
+              '../RBG_data_files/Ideal_model.txt', '../RBG_data_files/thermal_Model.txt']
 
-for file_name in file_names[0:1]:
+
+
+for file_name in file_names[4:5]:
     # get the file names
     b_n = os.path.basename(file_name)           # Extract only the file name
     base_name = os.path.splitext(b_n)[0]        # Remove file extension
 
     sequences = read_sequences(file_name)       # collect All the sequences
     ang = get_norm_gaps(sequences)              # all normalised gaps
-    get_gap0 = get_selected_gap(ang, 0)
-    get_gap1 = get_selected_gap(ang, 1)
+
+    # transposed_gaps = list(map(list, zip(*ang)))
+    # print(transposed_gaps)
+    # get_gap0 = get_selected_gap(ang, 0)
+    # get_gap1 = get_selected_gap(ang, 1)
 
     # plot_GDF_zeros(get_gap0, base_name)
     # plt.savefig(f"Zeros_{base_name}.png")
 
-    all_gaps = get_all_gaps(ang)  # Get all gaps
-    plot_all_gaps(all_gaps, base_name)  # Plot all gaps
+    plot_boxplot(ang, base_name)
 
-#
+
 plt.show()
