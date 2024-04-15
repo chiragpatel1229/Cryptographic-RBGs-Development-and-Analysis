@@ -128,16 +128,16 @@ def plot_MSE(norm_gaps_one, file_n=None):
 
 
 # Use the functions ====================================================================================================
-file_names = ['../RBG_data_files/QRNG.txt',
-              '../RBG_data_files/AES.txt',
-              '../RBG_data_files/ChaCha20.txt', '../RBG_data_files/CTR.txt',
-              '../RBG_data_files/Hash.txt',
-              '../RBG_data_files/HMAC.txt', '../RBG_data_files/M_sequences.txt',
-              '../RBG_data_files/RC4.txt', '../RBG_data_files/RSA.txt',
-              '../RBG_data_files/Synthetic.txt', '../RBG_data_files/bit-flip_Model.txt',
-              '../RBG_data_files/Ideal_model.txt', '../RBG_data_files/thermal_Model.txt']
+# file_names = ['../RBG_data_files/QRNG.txt',
+#               '../RBG_data_files/AES.txt',
+#               '../RBG_data_files/ChaCha20.txt', '../RBG_data_files/CTR.txt',
+#               '../RBG_data_files/Hash.txt',
+#               '../RBG_data_files/HMAC.txt', '../RBG_data_files/M_sequences.txt',
+#               '../RBG_data_files/RC4.txt', '../RBG_data_files/RSA.txt',
+#               '../RBG_data_files/Synthetic.txt', '../RBG_data_files/bit-flip_Model.txt',
+#               '../RBG_data_files/Ideal_model.txt', '../RBG_data_files/thermal_Model.txt']
 
-# file_names = ['../RBG_data_files/Q_thermal_noice_Model.txt']
+file_names = ['../RBG_Algorithms_by_ChiragPatel/M_sequences.txt']
 
 for file_name in file_names[:]:
     # get the file names
@@ -150,7 +150,7 @@ for file_name in file_names[:]:
     # get_gap1 = get_selected_gap(ang, 1)
 
 
-    # plot_GDF_zeros(gap_in, gap_out, base_name)
+    plot_GDF_zeros(gap_in, gap_out, base_name)
     # plt.savefig(f"Zeros_{base_name}.png")
 
 
@@ -166,16 +166,16 @@ for file_name in file_names[:]:
 
     # Use the mse functions ============================================================================================
 
-    avg_zero = sum(gap_in) / len(gap_in)
-    avg_zero = "{:.2f}".format(avg_zero)
-
-    actual_values = [0.50]  # Define the list of actual values
-    mse_values = []  # Compute the MSE values for different predicted values
-    mse_value = mse(actual_values, [float(avg_zero)])
-    mse_values.append(mse_value)
-
-    print(f"{base_name}: {mse_values[0]:.2e}      test avg: {avg_zero}")
+    # avg_zero = sum(gap_in) / len(gap_in)
+    # avg_zero = "{:.2f}".format(avg_zero)
+    #
+    # actual_values = [0.50]  # Define the list of actual values
+    # mse_values = []  # Compute the MSE values for different predicted values
+    # mse_value = mse(actual_values, [float(avg_zero)])
+    # mse_values.append(mse_value)
+    #
+    # print(f"{base_name}: {mse_values[0]:.2e}      test avg: {avg_zero}")
 
     # Use the functions ====================================================================================================
 
-# plt.show()
+plt.show()
