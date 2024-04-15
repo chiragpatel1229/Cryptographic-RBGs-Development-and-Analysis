@@ -1,5 +1,0 @@
-qiskit
-flask
-sympy
-hashlib
-yaml
