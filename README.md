@@ -1,4 +1,5 @@
 # Cryptography
+### Evaluation of Randomized Numbers for Cryptographic Purposes and their Applications in the Age of Quantum Computers
 
 The focus of this work is to investigate different random bit generators and analyze
 their security strength based on the proposed gap-based approach. The scope of
@@ -25,3 +26,4 @@ analysis provides an overall performance of generators as well as each bit seque
 Moreover, this evaluation also provides an insight on a correlation of these analysis
 methods based on the results.
 
+#### RBGs algorithms, QRBGs algorithms, NIST test suit 
