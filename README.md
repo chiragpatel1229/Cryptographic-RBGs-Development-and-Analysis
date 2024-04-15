@@ -26,4 +26,4 @@ analysis provides an overall performance of generators as well as each bit seque
 Moreover, this evaluation also provides an insight on a correlation of these analysis
 methods based on the results.
 
-#### RBGs algorithms, QRBGs algorithms, NIST test suit 
+#### RBG algorithms, QRBG algorithms, NIST test suit 
