@@ -1,4 +1,4 @@
-# Cryptography: Evaluating Randomized Numbers for Cryptographic Purposes in the Quantum Era
+# Evaluating Randomized Numbers for Cryptographic Purposes in the Quantum Era
 
 ## Introduction
 
