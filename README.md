@@ -2,7 +2,7 @@
 
 ## Introduction
 
-In the rapidly evolving landscape of cryptography, ensuring the security of random number generation is paramount. With the advent of quantum computers, traditional random bit generators face new challenges. This work delves into the evaluation of various random bit generators, emphasizing their security and applicability in the age of quantum computing.
+In the rapidly evolving landscape of both cybersecurity and cryptography, ensuring the security of digital data and encryption methods is paramount. With the advent of quantum computers, traditional encryption key generators face new challenges. This work delves into the evaluation of various random bit generators, emphasizing their security and applicability in the age of quantum computing.
 
 ## Investigating Random Bit Generators
 
@@ -18,9 +18,9 @@ Widely used random bit generators are examined, focusing on their construction, 
 
 2. **True Random Number Generators (TRNGs)**: TRNGs exploit physical processes (e.g., electronic noise or radioactive decay) to produce genuinely random bits. The advantages and challenges are discussed.
 
-## Designing an Advanced Random Bit Generator
+## Designing an Advanced (Post-Quantum Cryptographic) Random Bit Generator
 
-The research informs the design of an advanced random bit generator (Synthetic_RBG). By combining insights from classical cryptographic PRBGs and quantum approaches, a robust, scalable and secure generator is aimed to meet cryptographic requirements. Which is desgned and developed for low latency environments and stand alone applicaitons.
+This research informs the design of an advanced random bit generator, **Synthetic_RBG**. By integrating insights from classical cryptographic PRBGs and quantum approaches, the goal is to develop a robust, scalable, and secure generator that meets post-quantum cryptographic requirements. It is specifically designed and developed for low-latency environments and stand-alone applications.
 
 ## Assessing Randomness
 
@@ -32,6 +32,5 @@ The research informs the design of an advanced random bit generator (Synthetic_R
 
 This work contributes to the field of cryptography by providing a thorough examination of random bit generators. Whether leveraging classical algorithms or exploring quantum possibilities, understanding randomness is crucial for secure communication and data protection.
 
-#### Keywords: RBG algorithms, QRBG algorithms, NIST test suite
 #### To Explore my work, check the [RBG Algorithms by Chirag Patel](https://github.com/chiragpatel1229/Cryptographic-RBGs-Development-and-Analysis/tree/main/RBG_Algorithms_by_ChiragPatel) folder.
-
+#### Keywords: RBG algorithms, QRBG algorithms, NIST test suite
