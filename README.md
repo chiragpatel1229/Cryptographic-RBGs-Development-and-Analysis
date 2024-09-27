@@ -20,7 +20,7 @@ Widely used random bit generators are examined, focusing on their construction, 
 
 ## Designing an Advanced (Post-Quantum Cryptographic) Random Bit Generator
 
-This research informs the design of an advanced random bit generator, **Synthetic_RBG**. By integrating insights from classical cryptographic PRBGs and quantum approaches, the goal is to develop a robust, scalable, and secure generator that meets post-quantum cryptographic requirements. It is specifically designed and developed for low-latency environments and stand-alone applications.
+My work informs the design of an advanced random bit generator, **Synthetic_RBG**. By integrating insights from classical cryptographic PRBGs and quantum approaches, the goal is to develop a robust, scalable, and secure generator that meets post-quantum cryptographic requirements. It is specifically designed and developed for low-latency environments and stand-alone applications.
 
 ## Assessing Randomness
 
