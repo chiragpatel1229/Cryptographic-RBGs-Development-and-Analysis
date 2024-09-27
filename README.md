@@ -33,5 +33,5 @@ The research informs the design of an advanced random bit generator (Synthetic_R
 This work contributes to the field of cryptography by providing a thorough examination of random bit generators. Whether leveraging classical algorithms or exploring quantum possibilities, understanding randomness is crucial for secure communication and data protection.
 
 #### Keywords: RBG algorithms, QRBG algorithms, NIST test suite
-#### For more details, check the [RBG Algorithms by Chirag Patel](https://github.com/chiragpatel1229/Cryptographic-RBGs-Development-and-Analysis/tree/main/RBG_Algorithms_by_ChiragPatel) folder.
+#### To Explore my work, check the [RBG Algorithms by Chirag Patel](https://github.com/chiragpatel1229/Cryptographic-RBGs-Development-and-Analysis/tree/main/RBG_Algorithms_by_ChiragPatel) folder.
 
