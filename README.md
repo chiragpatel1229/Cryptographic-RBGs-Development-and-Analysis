@@ -6,28 +6,27 @@ In the rapidly evolving landscape of cryptography, ensuring the security of rand
 
 ## Investigating Random Bit Generators
 
-1. **Gap-Based Approach**: We propose a novel gap-based approach to assess the security strength of random bit generators. By analyzing the gaps between consecutive bits, we gain insights into their robustness against attacks.
+1. **Gap-Based Approach**: I propose a novel gap-based approach to assess the security strength of random bit generators. By analyzing the gaps between consecutive bits, insights are gained into their robustness against attacks.
 
-2. **Quantum Random Bit Generators (QRBGs)**: Extending our investigation, we explore QRBGs. These generators leverage quantum phenomena, such as quantum noise or photon measurements, to produce truly random bits. We evaluate their performance and suitability for cryptographic applications.
+2. **Quantum Random Bit Generators (QRBGs)**: Extending the investigation, QRBGs are explored. These generators leverage quantum phenomena, such as quantum noise or photon measurements, to produce truly random bits. The performance and suitability for cryptographic applications are evaluated.
 
 ## Understanding Existing Generators
 
-We delve into widely used random bit generators, examining their construction, architecture, and properties. Key algorithms include:
+Widely used random bit generators are examined, focusing on their construction, architecture, and properties. Key algorithms include:
 
-1. **Pseudorandom Bit Generators (PRBGs)**: These algorithms generate sequences that appear random but are deterministic. We analyze their statistical properties and limitations.
+1. **Pseudorandom Bit Generators (PRBGs)**: These algorithms generate sequences that appear random but are deterministic. The statistical properties and limitations are analyzed.
 
-2. **True Random Number Generators (TRNGs)**: TRNGs exploit physical processes (e.g., electronic noise or radioactive decay) to produce genuinely random bits. We discuss their advantages and challenges.
+2. **True Random Number Generators (TRNGs)**: TRNGs exploit physical processes (e.g., electronic noise or radioactive decay) to produce genuinely random bits. The advantages and challenges are discussed.
 
 ## Designing an Advanced Random Bit Generator
 
-Our research informs the design of an advanced random bit generator. By combining insights from classical PRBGs and quantum approaches, we aim to create a robust and secure generator that meets cryptographic requirements.
+The research informs the design of an advanced random bit generator. By combining insights from classical PRBGs and quantum approaches, a robust and secure generator is aimed to meet cryptographic requirements.
 
 ## Assessing Randomness
 
-1. **Gap-Based Analysis**: We apply our proposed gap-based approach (**Gap Density Function**) to evaluate the generated bit sequences. Graphical representations reveal patterns and highlight areas for improvement. The GDF
-test is able provide comprehensive gap-based analysis of random sequences.
+1. **Gap-Based Analysis**: The proposed gap-based approach (**Gap Density Function**) is applied to evaluate the generated bit sequences. Graphical representations reveal patterns and highlight areas for improvement. The GDF test provides a comprehensive gap-based analysis of random sequences.
 
-2. **NIST Statistical Test Suite**: We subject the sequences to NIST's suite of statistical tests. These tests assess randomness, independence, and uniformity. By comparing results, we gain a comprehensive view of each generator's performance.
+2. **NIST Statistical Test Suite**: The sequences are subjected to NIST's suite of statistical tests. These tests assess randomness, independence, and uniformity. By comparing results, a comprehensive view of each generator's performance is obtained.
 
 ## Conclusion
 
